@@ -57,6 +57,8 @@ html
 .Trashes
 ehthumbs.db
 Thumbs.db
-/.vs/EGSnrc-master/v14
+/.vs/
 
 EGSnrc-master.VC.db
+/HEN_HOUSE/egs++/geometry/examples/view_debug
+*.aps
