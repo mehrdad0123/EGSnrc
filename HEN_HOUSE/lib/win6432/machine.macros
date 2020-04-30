@@ -1,0 +1,71 @@
+%E
+%I4
+!INDENT F2;
+%C80
+%Q1
+"*************************************************************************
+"
+" EGSnrc machine dependent macro file for 
+" win6432
+"
+" Created by :
+" EGSnrc-configure-windows.exe version 1.0 on Thu Apr 30 2020
+"
+" You may add your own machine dependent macros to this file,
+" but be carefull to not overwrite it if you re-run
+" EGSnrc-configure-windows.exe
+"
+"*************************************************************************
+
+REPLACE {$MACHINE} WITH 
+  {,'win6432',};
+REPLACE {$HEN_HOUSE} WITH 
+  {'F:/Git/EGSnrc-master/HEN_HOUSE/'};
+REPLACE {$CANONICAL_SYSTEM} WITH 
+  {'win3264'};
+REPLACE {$CONFIGURATION_NAME} WITH 
+  {'win6432'};
+REPLACE {$EGS_CONFIG} WITH 
+  {'F:/Git/EGSnrc-master/HEN_HOUSE/specs/win6432.conf'};
+
+" System dependent stuff "
+"========================================"
+" Unfortunately, there appears to be no reliable way of copying files "
+" under Fortran => we use a system call for this" 
+REPLACE {$copy_file} WITH {'copy  '};
+
+" Although one can move files using Fortran's intrinsic rename, "
+" we don't know whether the user has not created additional files in "
+" the temporary working directory => it is easiest to use a system call "
+" to move all files from the temporary working directory to the user code "
+" directory. "
+REPLACE {$move_file} WITH {'move /Y '};
+
+" There appears to be no way of removing a directory from Fortran "
+" => we use a system call for this. "
+REPLACE {$remove_directory} WITH {'rmdir /S /Q '};
+
+" The directory separator "
+REPLACE {$file_sep} WITH {char(92)};
+
+REPLACE {$LONG_INT} WITH { integer*8 };
+REPLACE {$SHORT_INT} WITH { integer*2 };
+"$MAX_INT SET TO 2^63-1 in egsnrc.macros"
+"The machine byte order"
+REPLACE {$BYTE_ORDER} WITH {'1234'};
+;
+" Record Length for unformatted I/O "
+REPLACE {$RECL-FACTOR} WITH {4};
+;
+REPLACE {$FLUSH_UNIT(#);} WITH {call flush({P1});}
+;
+" If you want your user code to return an exit status, use the 
+" following macro to terminate execution
+REPLACE {$CALL_EXIT(#);} WITH {call exit({P1});}
+;
+" mortran3 gets confused by the # char => we need to pass it as an "
+" argument to the macro. "
+REPLACE {$HAVE_C_COMPILER(#);} WITH {{EMIT;{P1}define HAVE_C_COMPILER};}
+;
+REPLACE {$HAVE_LOAD_DSO(#);} WITH {{EMIT;{P1}define HAVE_LOAD_DSO};}
+;

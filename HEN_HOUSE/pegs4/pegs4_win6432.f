@@ -1,0 +1,5419 @@
+      program main_pegs4
+      implicit none
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/DBRPR/ALFP1(2),ALFP2(2),AL2
+      real*4 ALFP1,ALFP2,al2
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/ELEMTB/NET,WATBL(100),RHOTBL(100), ITBL(100),ISTATB(100)
+      real*4 ITBL
+      COMMON/ELMTBC/ASYMT(100)
+      CHARACTER*4 ASYMT
+      integer*4 net,istatb
+      real*4 watbl,rhotbl
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+      COMMON/LSPION/CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      real*4 CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      COMMON/MIMSD/BMIN,MSTEPS,JRMAX,MXV1,MXV2, MSMAP(200),FSTEP(16),FSQ
+     *R(16), VERT1(1000),VERT2(200,16)
+      integer*4 MSTEPS,JRMAX,MXV1,MXV2,MSMAP
+      real*4 BMIN,FSTEP,FSQR,VERT1,VERT2
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/PWLFIN/EPE,ZTHRE(8),ZEPE(8),NIPE,NALE,EPG,ZTHRG(4), ZEPG(4)
+     *,NIPG,NALG,EPR,ZTHRR(1),ZEPR(1),NIPR,NALR
+      real*4 EPE,ZTHRE,ZEPE,EPG,ZTHRG,ZEPG,EPR,ZTHRR,ZEPR
+      integer*4 NIPE,NALE,NIPG,NALG,NIPR,NALR
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      COMMON/RSLTS/EBINDA,NEL,AXE,BXE,AFE(150,8),BFE(150,8), NGL,AXG,BXG
+     *,AFG(2000,4),BFG(2000,4),NGR,AXR,BXR,AFR(100), BFR(100)
+      real*4 EBINDA,AXE,BXE,AFE,BFE,AXG,BXG,AFG,BFG,AXR,BXR,AFR,BFR
+      integer*4 NEL,NGL,NGR
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      real*4 XP(4),WASAV(20)
+      LOGICAL MEDSET,ENGSET
+      CHARACTER*4 OPTION(4,14),OPT(4),BLKW,NAME(6)
+      CHARACTER*4 NAMESB(12),IDFNAM(6)
+      integer*4 NH(200)
+      EXTERNAL ALKE,ALKEI,EFUNS,GFUNS,RFUNS,ALIN,ALINI,AFFACT
+      INTRINSIC ALOG,EXP
+      integer*4 NOPT,NPTS,IDF,EPSTFL_old,IUNRST_old,IAPRIM_old
+      integer*4 IFUN,IV,ISUB,I,in,iz,ICH,IOPT,IMIXT,I01,IZZ,NA,ID, NTIME
+     *S,NBINS,IQI,IRNFLG,IBIN
+      real*4 VLO,VHI,EI,RHOSAV,AX,BX,VALUE,RNLO,RNHI,PINC,AVE
+      integer*4 IFUNT
+      real*4 ZTBL,EBIND,QD,FI
+      DATA OPTION/'E','L','E','M','M','I','X','T','C','O','M','P','E','N
+     *','E','R','M','I','M','S','P','W','L','F', 'D','E','C','K','T','E'
+     *,'S','T','D','B','U','G','C','A','L','L','P','L','T','N','S','T','
+     *O','P','P','L','T','I', 'H','P','L','T'/
+      DATA NOPT/14/,BLKW/' '/
+      DATA MEDSET/.FALSE./,ENGSET/.FALSE./
+      DATA NPTS/50/,IDF/6/
+      NAMELIST/PHPRNM/NPHE,PHE,PHD,EKEDGE,PRE,PRD,COHE
+      NAMELIST/AFFDT/XVAL,AFAC
+      NAMELIST/INP/NE,PZ,RHO,RHOZ,WA,AE,UE,AP,UP, IFUN,XP,IV,VLO,VHI,IDF
+     *,NPTS, EPE,ZTHRE,ZEPE,NIPE,NALE,EPG,ZTHRG,ZEPG,NIPG,NALG, EI,ISUB,
+     *GASP,IUNRST,IRAYL,AFACT,SK,X0,X1,IEV,CBAR,ISSB,EPSTFL, IAPRIM
+      NAMELIST/PWLFNM/EPE,ZTHRE,ZEPE,NIPE,NALE,EPG,ZTHRG,ZEPG,NIPG,NALG,
+     * EPR,ZTHRR,ZEPR,NIPR,NALR
+      save NOPT,NPTS,IDF
+      call open_units
+      write(6,*) 'Returned from call open_units'
+      WRITE(6,1010)
+1010  FORMAT('1',20X,'PEGS4 LISTING FILE',/ 20X,'(WITH NRCC MODIFICATION
+     *S, Jan 13,1988)')
+      WRITE(6,1020)
+1020  FORMAT(/)
+      CALL PMDCON
+      WRITE(6,1030)
+1030  FORMAT(/' This version reads units 8 and 9 in free format'/)
+      READ(8,*) NPHE, ((PHE(in,iz),in=1,61),iz=1,100), ((PHD(in,iz),in=1
+     *,61),iz=1,100), EKEDGE, PRE, ((PRD(in,iz),in=1,17),iz=1,100), ((CO
+     *HE(in,iz),in=1,61),iz=1,100)
+      READ(9,*) XVAL, ((AFAC(in,iz),in=1,100),iz=1,100)
+1040  CONTINUE
+        DO 1041 I=1,20
+        WASAV(I)=WA(I)
+        WA(I)=0.
+1041  CONTINUE
+1042  CONTINUE
+      RHOSAV=RHO
+      RHO=0.0
+      READ(5,1050,END=1060)OPT
+1050  FORMAT(4A1)
+      WRITE(6,1070)OPT
+1070  FORMAT(//,1X,60('*'),/,' *',T61,'*',/,' *  OPT = ',4A1,T61,'*',/,'
+     * *',T61,'*',/,1X,60('*'),//)
+      EPSTFL_old=EPSTFL
+      IUNRST_old=IUNRST
+      IAPRIM_old=IAPRIM
+      READ(5,INP,END=1080)
+      IF ((RHO.EQ.0)) THEN
+        DO 1091 ICH=1,4
+          IF ((OPT(ICH).NE.OPTION(ICH,1))) THEN
+            RHO=RHOSAV
+            GO TO1092
+          END IF
+1091    CONTINUE
+1092    CONTINUE
+      END IF
+1100  CONTINUE
+        DO 1101 IOPT=1,NOPT
+        DO 1111 ICH=1,4
+          IF((OPT(ICH).NE.OPTION(ICH,IOPT)))GO TO 1101
+1111    CONTINUE
+1112    CONTINUE
+        GO TO 1120
+1101  CONTINUE
+1102  CONTINUE
+      WRITE(6,1130)
+1130  FORMAT(' OPTION NOT FOUND, JOB ABORTED.')
+      call exit(16)
+1120  IF ((IOPT.GT.3)) THEN
+        RHO=RHOSAV
+        DO 1141 I=1,20
+          WA(I)=WASAV(I)
+1141    CONTINUE
+1142    CONTINUE
+        IF (( EPSTFL .NE. EPSTFL_old )) THEN
+          write(*,'(2a,i2)') 'EPSTFL in wrong OPTION block!', ' Resettin
+     *g to EPSTFL= ',EPSTFL_old
+          EPSTFL=EPSTFL_old
+        END IF
+        IF (( IUNRST .NE. IUNRST_old )) THEN
+          write(*,'(2a,i2)') 'IUNRST in wrong OPTION block!', ' Resettin
+     *g to IUNRST= ',IUNRST_old
+          IUNRST=IUNRST_old
+        END IF
+        IF (( IAPRIM .NE. IAPRIM_old )) THEN
+          write(*,'(2a,i2)') 'IAPRIM in wrong OPTION block!', ' Resettin
+     *g to IAPRIM= ',IAPRIM_old
+          IAPRIM=IAPRIM_old
+        END IF
+      ELSE
+        DO 1151 I=1,4
+          MTYP(I)=OPT(I)
+1151    CONTINUE
+1152    CONTINUE
+      END IF
+      GO TO(1160,1170,1180,1190,1200,1210,1220,1230, 1240,1250,1260,1060
+     *,1270,1280),IOPT
+1160  NE=1
+      PZ(1)=1
+      IMIXT=0
+      GO TO 1290
+1170  IF ((NE.LE.1)) THEN
+        WRITE(6,1300)NE
+1300    FORMAT(//,' NE=',I6,' IS IMPROPERLY DEFINED FOR A MIXTURE')
+        STOP
+      END IF
+      IMIXT=1
+      GO TO 1290
+1180  IF ((NE.LE.1)) THEN
+        WRITE(6,1310)NE
+1310    FORMAT(//,' NE=',I6,' IS IMPROPERLY DEFINED FOR A COMPOUND')
+        call exit(17)
+      END IF
+      IMIXT=0
+1290  READ(5,1320)MEDIUM,IDSTRN
+1320  FORMAT(24A1,6X,24A1)
+      READ(5,1330)(ASYM(I),I=1,NE)
+1330  FORMAT(24(A2,1X))
+      IF ((IDSTRN(1).EQ.BLKW)) THEN
+        DO 1341 I=1,LMED
+          IDSTRN(I)=MEDIUM(I)
+1341    CONTINUE
+1342    CONTINUE
+      END IF
+      WRITE(6,1350)MEDIUM,IDSTRN,(ASYM(I),I=1,NE)
+1350  FORMAT(1X,60('-')/' MEDIUM=',24A1,',STERNHEIMER ID=',24A1,/1X,60('
+     *-')// ,' ATOMIC SYMBOLS ARE: ',(1X,24(A2,1X) ))
+      IF ((IUNRST.EQ.1)) THEN
+        WRITE(6,1360)
+1360    FORMAT(/T10,'***CALCULATES UNRESTRICTED COLLISION', ' STOPPING P
+     *OWER***  IUNRST=1'//)
+      ELSE IF((IUNRST.EQ.2)) THEN
+        WRITE(6,1370)
+1370    FORMAT(/T10,'****DATA SET FOR A CSDA CALCULATION', '******  IUNR
+     *ST=2'//)
+      ELSE IF((IUNRST.EQ.3)) THEN
+        WRITE(6,1380)
+1380    FORMAT(/T10,'****DATA SET FOR A CSDA CALCULATION', ' BUT WITH BR
+     *EM EVENTS******  IUNRST = 3'//)
+      ELSE IF((IUNRST.EQ.4)) THEN
+        WRITE(6,1390)
+1390    FORMAT(/T10,'****DATA SET FOR A CALCULATION', 'WITH DELTAS DISCR
+     *ETE,BREM CSDA******  IUNRST = 4'//)
+      ELSE IF((IUNRST.EQ.5)) THEN
+        WRITE(6,1400)
+1400    FORMAT(/T10,'****CALCULATES UNRESTRICTED RADIATIVE', ' STOPPINGP
+     *OWER***** IUNRST = 5')
+      ELSE IF((IUNRST.EQ.6)) THEN
+        WRITE(6,1410)
+1410    FORMAT(/T10,'****CALCULATES RESTRICTED RADIATIVE', ' STOPPING PO
+     *WER***** IUNRST = 6')
+      ELSE IF((IUNRST.EQ.7)) THEN
+        WRITE(6,1420)
+1420    FORMAT(/T10,'****CALCULATES RESTRICTED COLLISION', ' STOPPING PO
+     *WER***** IUNRST = 7')
+      END IF
+      DO 1431 I=1,NE
+        Z(I)=ZTBL(ASYM(I))
+        IF ((Z(I).EQ.0.0)) THEN
+          WRITE(6,1440)
+1440      FORMAT(' BAD ATOMIC SYMBOL....JOB ABORTED.')
+          call exit(16)
+        END IF
+        IF (WA(I).EQ.0.) THEN
+          I01=Z(I)
+          WA(I)=WATBL(I01)
+        END IF
+        IF ((IMIXT.NE.0)) THEN
+          PZ(I)=RHOZ(I)/WA(I)
+        ELSE
+          RHOZ(I)=PZ(I)*WA(I)
+        END IF
+1431  CONTINUE
+1432  CONTINUE
+      IF ((NE.EQ.1.AND.RHO.EQ.0.)) THEN
+        I01=Z(1)
+        RHO=RHOTBL(I01)
+      END IF
+      CALL MIX
+      CALL SPINIT
+      CALL DIFFER
+      MEDSET=.TRUE.
+      WRITE(6,1450)
+1450  FORMAT(//,' END OF ELEM, MIXT, OR COMP OPTION',///)
+      GOTO 1040
+1190  IF (AE.LT.0)AE=-AE*RM
+      IF((UE.LT.0))UE=-UE*RM
+      IF((AP.LT.0))AP=-AP*RM
+      IF((UP.LT.0))UP=-UP*RM
+      TE=AE-RM
+      TET2=TE*2.0
+      TEM=TE/RM
+      THBREM=RM+AP
+      THMOLL=AE+TE
+      WRITE(6,1460)AE,UE,AP,UP,TE,TET2,TEM,THBREM,THMOLL
+1460  FORMAT('0AE,UE,AP,UP,TE,TET2,TEM,THBREM,THMOLL'/1X,1P,5E15.7/1X,1P
+     *,4E15.7)
+      ENGSET=.TRUE.
+      GOTO 1040
+1200  CALL MOLIER
+      GOTO 1040
+1210  IF (MEDSET.AND.ENGSET)GO TO 1470
+      WRITE(6,1480)MEDSET,ENGSET
+1480  FORMAT(' MEDSET,ENGSET=',2L2,',PWLF REQ. IGNORED.')
+      call exit(16)
+1470  EBINDA=EBIND(AP)
+      WRITE(6,PWLFNM)
+      WRITE(6,1490)EBINDA
+1490  FORMAT(' AVERAGE K-IONIZATION ENERGY=',F10.6,'(MEV)')
+      WRITE(6,1500)
+1500  FORMAT('0DO PWLF TO ELECTRON DATA SETS'/)
+      CALL PWLF1(NEL,NALE,AE,UE,THMOLL,EPE,ZTHRE,ZEPE,NIPE,ALKE,ALKEI, A
+     *XE,BXE,150,8,AFE,BFE,EFUNS)
+      WRITE(6,1510)
+1510  FORMAT('0DO PWLF TO PHOTON DATA SETS'/)
+      CALL PWLF1(NGL,NALG,AP,UP,RMT2,EPG,ZTHRG,ZEPG,NIPG,ALOG,EXP, AXG,B
+     *XG,2000,4,AFG,BFG,GFUNS)
+      IF ((IRAYL.EQ.1)) THEN
+        WRITE(6,1520)
+1520    FORMAT(//,' ***** IRAYL=1: RAYLEIGH DATA INCLUDED *****',//)
+        WRITE(6,1530)
+1530    FORMAT(' DO PWLF TO RAYLEIGH DISTRIBUTION'/)
+        DO 1541 I=1,100
+          AFAC2(I)=0.0
+          DO 1551 IN=1,NE
+            IZZ=Z(IN)
+            AFAC2(I)=AFAC2(I)+PZ(IN)*AFAC(I,IZZ)**2
+1551      CONTINUE
+1552      CONTINUE
+1541    CONTINUE
+1542    CONTINUE
+        DO 1561 I=1,100
+          XVAL(I)=XVAL(I)**2.
+1561    CONTINUE
+1562    CONTINUE
+        AFFI(1)=0.0
+        DO 1571 I=2,87
+          AX=XVAL(I-1)
+          BX=XVAL(I)
+          AFFI(I)=QD(AFFACT,AX,BX,'AFFACT')
+1571    CONTINUE
+1572    CONTINUE
+        DO 1581 I=2,87
+          AFFI(I)=AFFI(I)+AFFI(I-1)
+1581    CONTINUE
+1582    CONTINUE
+        DO 1591 I=1,87
+          AFFI(I)=AFFI(I)/AFFI(87)
+1591    CONTINUE
+1592    CONTINUE
+        CALL PWLF1(NGR,NALR,0.0,1.0,0.0,EPR,ZTHRR,ZEPR,NIPR,ALIN,ALINI,
+     *  AXR,BXR,100,1,AFR,BFR,RFUNS)
+      END IF
+      GOTO 1040
+1220  CALL LAY
+      GOTO 1040
+1230  CONTINUE
+      CALL PLOT(48,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(70,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(47,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(67,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(46,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(65,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(66,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(76,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(77,XP,1,AE,UE,NPTS,9)
+      CALL PLOT(52,XP,1,AP,UP,NPTS,6)
+      CALL PLOT(50,XP,1,AP,UP,NPTS,6)
+      CALL PLOT(51,XP,1,AP,UP,NPTS,6)
+      CALL PLOT(44,XP,1,AP,UP,NPTS,6)
+      WRITE(6,1600)
+1600  FORMAT('1')
+      GOTO 1040
+1240  CONTINUE
+      GOTO 1040
+1250  READ(5,1610)NAME
+1610  FORMAT(6A1)
+      IFUN=IFUNT(NAME)
+      IF((IFUN.LE.0))GOTO 1040
+      VALUE=FI(IFUN,XP(1),XP(2),XP(3),XP(4))
+      NA=NFARG(IFUN)
+      WRITE(6,1620)VALUE,(FNAME(I,IFUN),I=1,6),(XP(I),I=1,NA)
+1620  FORMAT('0FUNCTION CALL: ',1P,G15.6,' = ',6A1,' OF ',4G15.6)
+      GOTO 1040
+1260  READ(5,1630)NAME,IDFNAM
+1630  FORMAT(12A1)
+      IFUN=IFUNT(NAME)
+      IF((IFUN.LE.0))GOTO 1040
+      ID=IFUNT(IDFNAM)
+      IF((ID.LT.0))GOTO 1040
+      IF((ID.NE.0))IDF=ID
+1270  CALL PLOT(IFUN,XP,IV,VLO,VHI,NPTS,IDF)
+      GOTO 1040
+1280  READ(5,1640)NAMESB,NTIMES,NBINS,IQI,RNLO,RNHI,IRNFLG, (NH(IBIN),IB
+     *IN=1,NBINS)
+1640  FORMAT(' TEST DATA FOR ROUTINE=',12A1,',#SAMPLES=',I10,',NBINS=',I
+     *5 /' IQI=',I2,',RNLO,RNHI=',2F12.8,',IRNFLG=',I2/(9I8))
+      WRITE(6,1640)NAMESB,NTIMES,NBINS,IQI,RNLO,RNHI,IRNFLG, (NH(IBIN),I
+     *BIN=1,NBINS)
+      WRITE(6,1650)EI,ISUB
+1650  FORMAT(' EI=',F14.3,',ISUB=',I3)
+      GO TO (1660,1670,1680,1690,1700,1710),ISUB
+1660  CALL HPLT1(EI,RM,EI-RM,NAMESB,NTIMES,NBINS,NH, 1,53,58,62 )
+      GOTO 1040
+1670  CALL HPLT1(EI,EI/(1.0+2.0*EI/RM),EI,NAMESB,NTIMES,NBINS,NH, 6,40,4
+     *2,43 )
+      GOTO 1040
+1680  CALL HPLT1(EI,AP,EI-RM,NAMESB,NTIMES,NBINS,NH, 6,24,30,34 )
+      GOTO 1040
+1690  CALL HPLT1(EI,AE,RM+(EI-RM)*0.5,NAMESB,NTIMES,NBINS,NH, 3,11,13,14
+     * )
+      GOTO 1040
+1700  CALL HPLT1(EI,AE,EI,NAMESB,NTIMES,NBINS,NH, 3,20,22,23 )
+      GOTO 1040
+1710  PINC=SQRT(EI**2-RM**2)
+      AVE=EI+RM
+      CALL HPLT1(EI,AVE*RM/(AVE+PINC),AVE*0.5,NAMESB,NTIMES,NBINS,NH, 6,
+     *15,17,18 )
+      GOTO 1040
+1080  WRITE(6,1720)
+1720  FORMAT(' STOPPED IN MAIN PROGRAM BECAUSE NAMELIST/INP/',/, ' DATAC
+     *ARD(S) WERE MISSING.')
+      call exit(18)
+1060  WRITE(6,1730)
+1730  FORMAT(///' END OF FILE READ - EXIT FROM PEGS4'/'1')
+      call exit(0)
+      END
+      BLOCK DATA
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/DBRPR/ALFP1(2),ALFP2(2),AL2
+      real*4 ALFP1,ALFP2,al2
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/ELEMTB/NET,WATBL(100),RHOTBL(100), ITBL(100),ISTATB(100)
+      real*4 ITBL
+      COMMON/ELMTBC/ASYMT(100)
+      CHARACTER*4 ASYMT
+      integer*4 net,istatb
+      real*4 watbl,rhotbl
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+      COMMON/LSPION/CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      real*4 CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      COMMON/MIMSD/BMIN,MSTEPS,JRMAX,MXV1,MXV2, MSMAP(200),FSTEP(16),FSQ
+     *R(16), VERT1(1000),VERT2(200,16)
+      integer*4 MSTEPS,JRMAX,MXV1,MXV2,MSMAP
+      real*4 BMIN,FSTEP,FSQR,VERT1,VERT2
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/PWLFIN/EPE,ZTHRE(8),ZEPE(8),NIPE,NALE,EPG,ZTHRG(4), ZEPG(4)
+     *,NIPG,NALG,EPR,ZTHRR(1),ZEPR(1),NIPR,NALR
+      real*4 EPE,ZTHRE,ZEPE,EPG,ZTHRG,ZEPG,EPR,ZTHRR,ZEPR
+      integer*4 NIPE,NALE,NIPG,NALG,NIPR,NALR
+      COMMON/RADLEN/ALRAD(4),ALRADP(4),A1440,A183
+      real*4 ALRAD,ALRADP,A1440,A183
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      COMMON/SPCOMM/NMED,STDATA(6,73)
+      integer*4 NMED
+      real*4 STDATA
+      COMMON/SPCOMC/MEDTBL(24,73)
+      CHARACTER*4 MEDTBL
+      COMMON/RSLTS/EBINDA,NEL,AXE,BXE,AFE(150,8),BFE(150,8), NGL,AXG,BXG
+     *,AFG(2000,4),BFG(2000,4),NGR,AXR,BXR,AFR(100), BFR(100)
+      real*4 EBINDA,AXE,BXE,AFE,BFE,AXG,BXG,AFG,BFG,AXR,BXR,AFR,BFR
+      integer*4 NEL,NGL,NGR
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      DIMENSION STDAT1(6,20),STDAT2(6,20),STDAT3(6,20),STDAT4(6,13)
+      EQUIVALENCE (STDATA(1,1),STDAT1(1,1))
+      EQUIVALENCE (STDATA(1,21),STDAT2(1,1))
+      EQUIVALENCE (STDATA(1,41),STDAT3(1,1))
+      EQUIVALENCE (STDATA(1,61),STDAT4(1,1))
+      CHARACTER*4 MEDTB1(24,20),MEDTB2(24,20),MEDTB3(24,20),MEDTB4(24,13
+     *)
+      EQUIVALENCE (MEDTBL(1,1),MEDTB1(1,1))
+      EQUIVALENCE (MEDTBL(1,21),MEDTB2(1,1))
+      EQUIVALENCE (MEDTBL(1,41),MEDTB3(1,1))
+      EQUIVALENCE (MEDTBL(1,61),MEDTB4(1,1))
+      DATA AFACT/0.0/,SK/0.0/,X0/0.0/,X1/0.0/,CBAR/0.0/,IEV/0.0/,ISSB/0/
+      DATA LMED/24/,NMED/73/
+      DATA MEDTB1/'H','2','-','G','A','S',18*' ','H','2','-','L','I','Q'
+     *,'U','I','D',15*' ','H','E','-','G','A','S',18*' ','L','I',22*' ',
+     * 'B','E',22*' ','C','-','2','.','2','6','5',' ','G','/','C','M','*
+     *','*','3',9*' ','C','-','1','.','7','0',' ','G','/','C','M','*','*
+     *','3',10*' ', 'N','2','-','G','A','S',18*' ','O','2','-','G','A','
+     *S',18*' ','N','E','-','G','A','S',18*' ','N','A',22*' ', 'M','G',2
+     *2*' ','A','L',22*' ','S','I',22*' ','A','R','-','G','A','S',18*' '
+     *, 'K',23*' ','C','A',22*' ','T','I',22*' ','V',23*' ','M','N',22*'
+     * '/
+      DATA MEDTB2/'F','E',22*' ','C','O',22*' ','N','I',22*' ','C','U',2
+     *2*' ','Z','N',22*' ', 'G','E',22*' ','S','E',22*' ','K','R','-','G
+     *','A','S',18*' ','R','B',22*' ', 'M','O',22*' ','A','G',22*' ','C'
+     *,'D',22*' ','I','N',22*' ','S','N',22*' ', 'X','E','-','G','A','S'
+     *,18*' ','C','S',22*' ','G','D',22*' ','T','A',22*' ', 'W',23*' ','
+     *P','T',22*' '/
+      DATA MEDTB3/'A','U',22*' ','H','G',22*' ','P','B',22*' ','R','N','
+     *-','G','A','S',18*' ', 'U',23*' ', 'A','I','R','-','G','A','S',17*
+     *' ','C','O','2','-','G','A','S',17*' ','P','O','L','Y','E','T','H'
+     *,'Y','L','E','N','E',12*' ', 'P','O','L','Y','P','R','O','P','Y','
+     *L','E','N','E',11*' ','X','Y','L','E','N','E',18*' ','T','O','L','
+     *U','E','N','E',17*' ', 'N','Y','L','O','N',19*' ','V','I','N','Y',
+     *'L','T','O','L','U','E','N','E',12*' ','A','1','5','0','-','P','L'
+     *,'A','S','T','I','C',12*' ', 'S','T','I','L','B','E','N','E',16*'
+     *','P','O','L','Y','S','T','Y','R','E','N','E',13*' ','A','N','T','
+     *H','R','A','C','E','N','E',14*' ', 'L','E','X','A','N',19*' ','L',
+     *'U','C','I','T','E',18*' ','H','2','O',21*' '/
+      DATA MEDTB4/'M','Y','L','A','R',19*' ', 'K','A','P','T','O','N',18
+     **' ','L','I','F',21*' ','P','O','L','Y','V','I','N','Y','L','-','C
+     *','L',12*' ', 'P','Y','R','E','X','-','G','L','A','S','S',13*' ','
+     *S','I','O','2',20*' ','C','A','F','2',20*' ', 'P','H','O','T','O',
+     *'E','M','U','L','S','I','O','N',11*' ','A','G','C','L',20*' ','N',
+     *'A','I',21*' ', 'L','I','I',21*' ','A','G','B','R',20*' ','C','S',
+     *'I',21*' '/
+      DATA STDAT1/0.03535,6.790,1.864,3.5,19.2,9.584, 0.09179,5.831,0.47
+     *6,2.0,21.8,3.263, 0.0114,7.625,2.202,4.0,41.8,11.139, 0.3492,3.233
+     *,0.0966,2.0,40.0,3.122, 0.3518,3.034,-0.0089,2.0,63.7,2.785, 0.584
+     *8,2.360,-0.0089,2.0,78.0,2.868, 0.7154,2.191,-0.0089,2.0,78.0,3.15
+     *5, 0.2120,3.041,1.738,4.0,82.0,10.540, 0.2666,2.825,1.754,4.0,95.0
+     *,10.700, 0.1202,3.357,2.073,4.5,137.0,11.904, 0.2204,3.103,0.4515,
+     *2.8,149.0,5.053, 0.1714,3.223,0.2386,2.8,156.0,4.530, 0.3346,2.795
+     *,0.0966,2.5,166.0,4.239, 0.3755,2.720,0.0966,2.5,173.0,4.435, 0.19
+     *02,2.982,1.764,4.5,188.0,11.948, 0.3041,2.674,0.2386,3.0,190.0,5.6
+     *42, 0.2177,2.874,0.1751,3.0,191.0,5.040, 0.1782,2.946,0.0485,3.0,2
+     *33.0,4.445, 0.1737,2.935,-0.0089,3.0,245.0,4.266, 0.1996,2.812,-0.
+     *0089,3.0,272.0,4.270/
+      DATA STDAT2/0.2101,2.771,-0.0089,3.0,286.0,4.291, 0.2229,2.713,-0.
+     *0089,3.0,297.0,4.260, 0.2504,2.619,-0.0089,3.0,311.0,4.312, 0.2557
+     *,2.613,-0.0089,3.0,322.0,4.419, 0.3163,2.468,0.0485,3.0,330.0,4.69
+     *1, 0.2809,2.647,0.2386,3.0,350.0,5.141, 0.2979,2.635,0.2386,3.0,34
+     *8.0,5.321, 0.1519,3.030,1.716,4.8,352.0,12.512, 0.1450,3.078,0.451
+     *5,3.5,363.0,6.478, 0.2228,2.824,0.1751,3.0,424.0,4.879, 0.3091,2.5
+     *63,-0.0089,3.0,470.0,5.063, 0.1853,2.819,0.0485,3.3,469.0,5.273, 0
+     *.2004,2.790,0.1751,3.3,487.0,5.517, 0.1898,2.839,0.2386,3.3,488.0,
+     *5.534, 0.1329,3.020,1.563,5.0,482.0,12.728, 0.2214,2.784,0.4515,3.
+     *5,488.0,6.914, 0.2068,2.686,0.0485,3.5,591.0,5.874, 0.1663,2.805,0
+     *.1751,3.5,718.0,5.526, 0.1499,2.870,0.1751,3.5,727.0,5.406, 0.1465
+     *,2.903,0.0966,3.5,790.0,5.473/
+      DATA STDAT3/0.1533,2.881,0.0966,3.5,790.0,5.575, 0.1824,2.798,0.23
+     *86,3.5,800.0,5.961, 0.1861,2.814,0.2386,3.5,823.0,6.202, 0.1130,3.
+     *023,1.537,5.3,794.0,13.284, 0.1362,3.034,0.2386,3.5,890.0,5.869, 0
+     *.2466,2.879,1.742,4.0,85.7,10.595, 0.1999,3.022,1.648,4.0,88.7,10.
+     *239, 0.4875,2.544,0.1379,2.0,57.4,3.002, 0.2493,2.975,0.1537,2.3,5
+     *9.2,3.126, 0.2755,2.911,0.1695,2.3,61.8,3.270, 0.2830,2.890,0.1722
+     *,2.3,62.5,3.303, 0.5345,2.439,0.1336,2.0,63.9,3.063, 0.3495,2.749,
+     *0.1467,2.2,64.7,3.201, 0.5462,2.435,0.1329,2.0,65.1,3.110, 0.2989,
+     *2.851,0.1731,2.3,67.7,3.367, 0.3670,2.724,0.1647,2.2,68.7,3.300, 0
+     *.5858,2.364,0.1146,2.0,69.5,3.151, 0.3865,2.664,0.1608,2.2,73.1,3.
+     *321, 0.3996,2.606,0.1824,2.2,74.0,3.330, 0.2065,3.007,0.2400,2.5,7
+     *5.0,3.502/
+      DATA STDAT4/0.3124,2.782,0.1561,2.3,78.7,3.326, 0.4061,2.614,0.149
+     *2,2.2,79.3,3.342, 0.1308,3.476,0.0171,2.5,94.0,3.167, 0.1873,2.962
+     *,0.1558,2.8,108.2,4.053, 0.2988,2.805,0.1479,2.5,134.0,3.971, 0.14
+     *40,3.220,0.1385,2.8,139.2,4.003, 0.3750,2.592,0.0676,2.5,166.0,4.0
+     *65, 0.3416,2.496,0.1009,3.0,331.0,5.332, 0.1243,3.002,-0.0138,3.5,
+     *398.4,5.344, 0.1560,2.926,0.1203,3.5,452.0,6.057, 0.1785,2.845,0.0
+     *892,3.5,485.1,6.267, 0.1351,2.976,0.0358,3.5,487.2,5.616, 0.1796,2
+     *.840,0.0395,3.5,553.1,6.281/
+      DATA EPE/.01/,ZTHRE,ZEPE/16*0.0/,NIPE/20/,NALE/150/,EPG/.01/, ZTHR
+     *G/0.0,.1,0.0,0.0/,ZEPG/0.0,.01,0.0,0.0/,NIPG/20/,NALG/2000/, EPR/.
+     *01/,ZTHRR,ZEPR/2*0.0/,NIPR/20/,NALR/100/
+      DATA NET/100/
+      DATA ASYMT/'H','HE','LI','BE','B','C','N','O','F','NE', 'NA','MG',
+     *'AL','SI','P','S','CL','AR','K','CA','SC','TI', 'V','CR','MN','FE'
+     *,'CO','NI','CU','ZN','GA','GE','AS','SE','BR', 'KR','RB','SR','Y',
+     *'ZR','NB','MO','TC','RU','RH','PD','AG','CD', 'IN','SN','SB','TE',
+     *'I','XE','CS','BA','LA','CE','PR','ND', 'PM','SM','EU','GD','TB','
+     *DY','HO','ER','TM','YB','LU','HF','TA', 'W','RE','OS','IR','PT','A
+     *U','HG','TL','PB','BI','PO','AT','RN', 'FR','RA','AC','TH','PA','U
+     *','NP','PU','AM','CM','BK','CF','ES', 'FM'/
+      DATA WATBL/1.00797,4.0026,6.939,9.0122,10.811,12.01115,14.0067, 15
+     *.9994,18.9984,20.183,22.9898,24.312,26.9815,28.088,30.9738, 32.064
+     *,35.453,39.948,39.102,40.08,44.956,47.90,50.942,51.998, 54.9380,55
+     *.847,58.9332,58.71,63.54,65.37,69.72,72.59,74.9216, 78.96,79.808,8
+     *3.80,85.47,87.62,88.905,91.22,92.906,95.94,99.0, 101.07,102.905,10
+     *6.4,107.87,112.4,114.82,118.69,121.75,127.60, 126.9044,131.30,132.
+     *905,137.34,138.91, 140.12,140.907,144.24,147.,150.35,151.98,157.25
+     *,158.924,162.50, 164.930,167.26,168.934,173.04,174.97,178.49,180.9
+     *48,183.85, 186.2,190.2,192.2,195.08,196.987,200.59,204.37,207.19,2
+     *08.980, 210.,210.,222.,223.,226.,227.,232.036,231.,238.03,237.,242
+     *., 243.,247.,247.,248.,254.,253./
+      DATA RHOTBL/0.0808,0.19,0.534,1.85,2.5,2.26,1.14,1.568,1.5,1.0, 0.
+     *9712,1.74,2.702,2.4,1.82,2.07,2.2,1.65,0.86,1.55,3.02,4.54, 5.87,7
+     *.14,7.3,7.86,8.71,8.90,8.9333,7.140,5.91,5.36,5.73,4.80, 4.2,3.4,1
+     *.53,2.6,4.47,6.4,8.57,9.01,11.50,12.20,12.50,12.,10.5, 8.65,7.30,7
+     *.31,6.684,6.24,4.93,2.7,1.873,3.5,6.15,6.90,6.769, 7.007, 1. ,7.54
+     *,5.17,7.87,8.25,8.56,8.80,9.06,9.32,6.96,9.85, 11.40,16.60,19.30,2
+     *0.53,22.48,22.42,21.45,19.30,14.19,11.85, 11.34,9.78,9.30, 1. ,4.,
+     * 1. ,5., 1. ,11.0,15.37,18.90, 20.5,19.737,11.7,7.,1. , 1. , 1. ,
+     *1./
+      DATA ITBL/19.2,41.8,40.,63.7,76.0,78.0,82.0,95.0,115.,137., 149.,1
+     *56.,166.,173.,173.,180.,174.,188.,190.,191.,216.,233.,245., 257.,2
+     *72.,286.,297.,311.,322.,330.,334.,350.,347.,348.,357.,352., 363.,3
+     *66.,379.,393.,417.,424.,428.,441.,449.,470.,470.,469.,488., 488.,4
+     *87.,485.,491.,482.,488.,491.,501.,523.,535.,546.,560.,574., 580.,5
+     *91.,614.,628.,650.,658.,674.,684.,694.,705.,718.,727.,736., 746.,7
+     *57.,790.,790.,800.,810.,823.,823.,830.,825.,794.,827.,826., 841.,8
+     *47.,878.,890.,902.,921.,934.,939.,952.,966.,980.,994./
+      DATA ISTATB/1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0, 0,0
+     *,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0, 0,0,0,
+     *0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0, 0,0,0,0,0
+     *,0,0,0,0,0,0,0,0/
+      DATA ALRAD/5.31,4.79,4.74,4.71/,ALRADP/6.144,5.621,5.805,5.924/, A
+     *1440/1194.0/,A183/184.15/
+      DATA NFUNS/78/
+      DATA NFARG/1,1,1,1,1,1,1,1,1,1,2,1,3,1,2,1,3,1,2,2,1,3,1,2,1,3,3,1
+     *,1,3,3,4,1,1,3,4,2,1,2,2,1,3,1,1,1,1,1,1,1,1,1,1,2,1,3,1,3,3,4,1,1
+     *,1,1,2,1,1,1,2,1,1,2,2,3,3,1,1,1,1/
+      DATA FNAME(1,1),FNAME(2,1), FNAME(3,1), FNAME(4,1),FNAME(5,1),FNAM
+     *E(6,1) / 'A','L','I','N', 2*' '/
+      DATA FNAME(1,2),FNAME(2,2), FNAME(3,2), FNAME(4,2),FNAME(5,2),FNAM
+     *E(6,2) / 'A','L','I','N','I', 1*' '/
+      DATA FNAME(1,3),FNAME(2,3), FNAME(3,3), FNAME(4,3),FNAME(5,3),FNAM
+     *E(6,3) / 'A','D','F','M','O','L'/
+      DATA FNAME(1,4),FNAME(2,4), FNAME(3,4), FNAME(4,4),FNAME(5,4),FNAM
+     *E(6,4) / 'A','D','I','M','O','L'/
+      DATA FNAME(1,5),FNAME(2,5), FNAME(3,5), FNAME(4,5),FNAME(5,5),FNAM
+     *E(6,5) / 'A','D','D','M','O','L'/
+      DATA FNAME(1,6),FNAME(2,6), FNAME(3,6), FNAME(4,6),FNAME(5,6),FNAM
+     *E(6,6) / 'A','L','O','G', 2*' '/
+      DATA FNAME(1,7),FNAME(2,7), FNAME(3,7), FNAME(4,7),FNAME(5,7),FNAM
+     *E(6,7) / 'E','X','P', 3*' '/
+      DATA FNAME(1,8),FNAME(2,8), FNAME(3,8), FNAME(4,8),FNAME(5,8),FNAM
+     *E(6,8) / 'A','R','E','C', 2*' '/
+      DATA FNAME(1,9),FNAME(2,9), FNAME(3,9), FNAME(4,9),FNAME(5,9),FNAM
+     *E(6,9) / 'A','L','K','E', 2*' '/
+      DATA FNAME(1,10),FNAME(2,10), FNAME(3,10), FNAME(4,10),FNAME(5,10)
+     *,FNAME(6,10) / 'A','L','K','E','I', 1*' '/
+      DATA FNAME(1,11),FNAME(2,11), FNAME(3,11), FNAME(4,11),FNAME(5,11)
+     *,FNAME(6,11) / 'A','M','O','L','D','M'/
+      DATA FNAME(1,12),FNAME(2,12), FNAME(3,12), FNAME(4,12),FNAME(5,12)
+     *,FNAME(6,12) / 'A','M','O','L','F','M'/
+      DATA FNAME(1,13),FNAME(2,13), FNAME(3,13), FNAME(4,13),FNAME(5,13)
+     *,FNAME(6,13) / 'A','M','O','L','R','M'/
+      DATA FNAME(1,14),FNAME(2,14), FNAME(3,14), FNAME(4,14),FNAME(5,14)
+     *,FNAME(6,14) / 'A','M','O','L','T','M'/
+      DATA FNAME(1,15),FNAME(2,15), FNAME(3,15), FNAME(4,15),FNAME(5,15)
+     *,FNAME(6,15) / 'A','N','I','H','D','M'/
+      DATA FNAME(1,16),FNAME(2,16), FNAME(3,16), FNAME(4,16),FNAME(5,16)
+     *,FNAME(6,16) / 'A','N','I','H','F','M'/
+      DATA FNAME(1,17),FNAME(2,17), FNAME(3,17), FNAME(4,17),FNAME(5,17)
+     *,FNAME(6,17) / 'A','N','I','H','R','M'/
+      DATA FNAME(1,18),FNAME(2,18), FNAME(3,18), FNAME(4,18),FNAME(5,18)
+     *,FNAME(6,18) / 'A','N','I','H','T','M'/
+      DATA FNAME(1,19),FNAME(2,19), FNAME(3,19), FNAME(4,19),FNAME(5,19)
+     *,FNAME(6,19) / 'A','P','R','I','M', 1*' '/
+      DATA FNAME(1,20),FNAME(2,20), FNAME(3,20), FNAME(4,20),FNAME(5,20)
+     *,FNAME(6,20) / 'B','H','A','B','D','M'/
+      DATA FNAME(1,21),FNAME(2,21), FNAME(3,21), FNAME(4,21),FNAME(5,21)
+     *,FNAME(6,21) / 'B','H','A','B','F','M'/
+      DATA FNAME(1,22),FNAME(2,22), FNAME(3,22), FNAME(4,22),FNAME(5,22)
+     *,FNAME(6,22) / 'B','H','A','B','R','M'/
+      DATA FNAME(1,23),FNAME(2,23), FNAME(3,23), FNAME(4,23),FNAME(5,23)
+     *,FNAME(6,23) / 'B','H','A','B','T','M'/
+      DATA FNAME(1,24),FNAME(2,24), FNAME(3,24), FNAME(4,24),FNAME(5,24)
+     *,FNAME(6,24) / 'B','R','E','M','D','R'/
+      DATA FNAME(1,25),FNAME(2,25), FNAME(3,25), FNAME(4,25),FNAME(5,25)
+     *,FNAME(6,25) / 'B','R','E','M','F','R'/
+      DATA FNAME(1,26),FNAME(2,26), FNAME(3,26), FNAME(4,26),FNAME(5,26)
+     *,FNAME(6,26) / 'B','R','E','M','D','Z'/
+      DATA FNAME(1,27),FNAME(2,27), FNAME(3,27), FNAME(4,27),FNAME(5,27)
+     *,FNAME(6,27) / 'B','R','M','S','D','Z'/
+      DATA FNAME(1,28),FNAME(2,28), FNAME(3,28), FNAME(4,28),FNAME(5,28)
+     *,FNAME(6,28) / 'B','R','E','M','F','Z'/
+      DATA FNAME(1,29),FNAME(2,29), FNAME(3,29), FNAME(4,29),FNAME(5,29)
+     *,FNAME(6,29) / 'B','R','M','S','F','Z'/
+      DATA FNAME(1,30),FNAME(2,30), FNAME(3,30), FNAME(4,30),FNAME(5,30)
+     *,FNAME(6,30) / 'B','R','E','M','R','R'/
+      DATA FNAME(1,31),FNAME(2,31), FNAME(3,31), FNAME(4,31),FNAME(5,31)
+     *,FNAME(6,31) / 'B','R','E','M','R','M'/
+      DATA FNAME(1,32),FNAME(2,32), FNAME(3,32), FNAME(4,32),FNAME(5,32)
+     *,FNAME(6,32) / 'B','R','E','M','R','Z'/
+      DATA FNAME(1,33),FNAME(2,33), FNAME(3,33), FNAME(4,33),FNAME(5,33)
+     *,FNAME(6,33) / 'B','R','E','M','T','M'/
+      DATA FNAME(1,34),FNAME(2,34), FNAME(3,34), FNAME(4,34),FNAME(5,34)
+     *,FNAME(6,34) / 'B','R','E','M','T','R'/
+      DATA FNAME(1,35),FNAME(2,35), FNAME(3,35), FNAME(4,35),FNAME(5,35)
+     *,FNAME(6,35) / 'B','R','M','S','R','M'/
+      DATA FNAME(1,36),FNAME(2,36), FNAME(3,36), FNAME(4,36),FNAME(5,36)
+     *,FNAME(6,36) / 'B','R','M','S','R','Z'/
+      DATA FNAME(1,37),FNAME(2,37), FNAME(3,37), FNAME(4,37),FNAME(5,37)
+     *,FNAME(6,37) / 'B','R','M','S','T','M'/
+      DATA FNAME(1,38),FNAME(2,38), FNAME(3,38), FNAME(4,38),FNAME(5,38)
+     *,FNAME(6,38) / 'C','O','H','E','T','M'/
+      DATA FNAME(1,39),FNAME(2,39), FNAME(3,39), FNAME(4,39),FNAME(5,39)
+     *,FNAME(6,39) / 'C','O','H','E','T','Z'/
+      DATA FNAME(1,40),FNAME(2,40), FNAME(3,40), FNAME(4,40),FNAME(5,40)
+     *,FNAME(6,40) / 'C','O','M','P','D','M'/
+      DATA FNAME(1,41),FNAME(2,41), FNAME(3,41), FNAME(4,41),FNAME(5,41)
+     *,FNAME(6,41) / 'C','O','M','P','F','M'/
+      DATA FNAME(1,42),FNAME(2,42), FNAME(3,42), FNAME(4,42),FNAME(5,42)
+     *,FNAME(6,42) / 'C','O','M','P','R','M'/
+      DATA FNAME(1,43),FNAME(2,43), FNAME(3,43), FNAME(4,43),FNAME(5,43)
+     *,FNAME(6,43) / 'C','O','M','P','T','M'/
+      DATA FNAME(1,44),FNAME(2,44), FNAME(3,44), FNAME(4,44),FNAME(5,44)
+     *,FNAME(6,44) / 'C','R','A','T','I','O'/
+      DATA FNAME(1,45),FNAME(2,45), FNAME(3,45), FNAME(4,45),FNAME(5,45)
+     *,FNAME(6,45) / 'E','B','I','N','D', 1*' '/
+      DATA FNAME(1,46),FNAME(2,46), FNAME(3,46), FNAME(4,46),FNAME(5,46)
+     *,FNAME(6,46) / 'E','B','R','1', 2*' '/
+      DATA FNAME(1,47),FNAME(2,47), FNAME(3,47), FNAME(4,47),FNAME(5,47)
+     *,FNAME(6,47) / 'E','D','E','D','X', 1*' '/
+      DATA FNAME(1,48),FNAME(2,48), FNAME(3,48), FNAME(4,48),FNAME(5,48)
+     *,FNAME(6,48) / 'E','S','I','G', 2*' '/
+      DATA FNAME(1,49),FNAME(2,49), FNAME(3,49), FNAME(4,49),FNAME(5,49)
+     *,FNAME(6,49) / 'F','C','O','U','L','C'/
+      DATA FNAME(1,50),FNAME(2,50), FNAME(3,50), FNAME(4,50),FNAME(5,50)
+     *,FNAME(6,50) / 'G','B','R','1', 2*' '/
+      DATA FNAME(1,51),FNAME(2,51), FNAME(3,51), FNAME(4,51),FNAME(5,51)
+     *,FNAME(6,51) / 'G','B','R','2', 2*' '/
+      DATA FNAME(1,52),FNAME(2,52), FNAME(3,52), FNAME(4,52),FNAME(5,52)
+     *,FNAME(6,52) / 'G','M','F','P', 2*' '/
+      DATA FNAME(1,53),FNAME(2,53), FNAME(3,53), FNAME(4,53),FNAME(5,53)
+     *,FNAME(6,53) / 'P','A','I','R','D','R'/
+      DATA FNAME(1,54),FNAME(2,54), FNAME(3,54), FNAME(4,54),FNAME(5,54)
+     *,FNAME(6,54) / 'P','A','I','R','F','R'/
+      DATA FNAME(1,55),FNAME(2,55), FNAME(3,55), FNAME(4,55),FNAME(5,55)
+     *,FNAME(6,55) / 'P','A','I','R','D','Z'/
+      DATA FNAME(1,56),FNAME(2,56), FNAME(3,56), FNAME(4,56),FNAME(5,56)
+     *,FNAME(6,56) / 'P','A','I','R','F','Z'/
+      DATA FNAME(1,57),FNAME(2,57), FNAME(3,57), FNAME(4,57),FNAME(5,57)
+     *,FNAME(6,57) / 'P','A','I','R','R','M'/
+      DATA FNAME(1,58),FNAME(2,58), FNAME(3,58), FNAME(4,58),FNAME(5,58)
+     *,FNAME(6,58) / 'P','A','I','R','R','R'/
+      DATA FNAME(1,59),FNAME(2,59), FNAME(3,59), FNAME(4,59),FNAME(5,59)
+     *,FNAME(6,59) / 'P','A','I','R','R','Z'/
+      DATA FNAME(1,60),FNAME(2,60), FNAME(3,60), FNAME(4,60),FNAME(5,60)
+     *,FNAME(6,60) / 'P','A','I','R','T','E'/
+      DATA FNAME(1,61),FNAME(2,61), FNAME(3,61), FNAME(4,61),FNAME(5,61)
+     *,FNAME(6,61) / 'P','A','I','R','T','M'/
+      DATA FNAME(1,62),FNAME(2,62), FNAME(3,62), FNAME(4,62),FNAME(5,62)
+     *,FNAME(6,62) / 'P','A','I','R','T','R'/
+      DATA FNAME(1,63),FNAME(2,63), FNAME(3,63), FNAME(4,63),FNAME(5,63)
+     *,FNAME(6,63) / 'P','A','I','R','T','U'/
+      DATA FNAME(1,64),FNAME(2,64), FNAME(3,64), FNAME(4,64),FNAME(5,64)
+     *,FNAME(6,64) / 'P','A','I','R','T','Z'/
+      DATA FNAME(1,65),FNAME(2,65), FNAME(3,65), FNAME(4,65),FNAME(5,65)
+     *,FNAME(6,65) / 'P','B','R','1', 2*' '/
+      DATA FNAME(1,66),FNAME(2,66), FNAME(3,66), FNAME(4,66),FNAME(5,66)
+     *,FNAME(6,66) / 'P','B','R','2', 2*' '/
+      DATA FNAME(1,67),FNAME(2,67), FNAME(3,67), FNAME(4,67),FNAME(5,67)
+     *,FNAME(6,67) / 'P','D','E','D','X', 1*' '/
+      DATA FNAME(1,68),FNAME(2,68), FNAME(3,68), FNAME(4,68),FNAME(5,68)
+     *,FNAME(6,68) / 'P','H','O','T','T','Z'/
+      DATA FNAME(1,69),FNAME(2,69), FNAME(3,69), FNAME(4,69),FNAME(5,69)
+     *,FNAME(6,69) / 'P','H','O','T','T','E'/
+      DATA FNAME(1,70),FNAME(2,70), FNAME(3,70), FNAME(4,70),FNAME(5,70)
+     *,FNAME(6,70) / 'P','S','I','G', 2*' '/
+      DATA FNAME(1,71),FNAME(2,71), FNAME(3,71), FNAME(4,71),FNAME(5,71)
+     *,FNAME(6,71) / 'S','P','I','O','N','E'/
+      DATA FNAME(1,72),FNAME(2,72), FNAME(3,72), FNAME(4,72),FNAME(5,72)
+     *,FNAME(6,72) / 'S','P','I','O','N','P'/
+      DATA FNAME(1,73),FNAME(2,73), FNAME(3,73), FNAME(4,73),FNAME(5,73)
+     *,FNAME(6,73) / 'S','P','T','O','T','E'/
+      DATA FNAME(1,74),FNAME(2,74), FNAME(3,74), FNAME(4,74),FNAME(5,74)
+     *,FNAME(6,74) / 'S','P','T','O','T','P'/
+      DATA FNAME(1,75),FNAME(2,75), FNAME(3,75), FNAME(4,75),FNAME(5,75)
+     *,FNAME(6,75) / 'T','M','X','B', 2*' '/
+      DATA FNAME(1,76),FNAME(2,76), FNAME(3,76), FNAME(4,76),FNAME(5,76)
+     *,FNAME(6,76) / 'T','M','X','S', 2*' '/
+      DATA FNAME(1,77),FNAME(2,77), FNAME(3,77), FNAME(4,77),FNAME(5,77)
+     *,FNAME(6,77) / 'T','M','X','D','E','2'/
+      DATA FNAME(1,78),FNAME(2,78), FNAME(3,78), FNAME(4,78),FNAME(5,78)
+     *,FNAME(6,78) / 'X','S','I','F', 2*' '/
+      DATA GASP/0.0/
+      DATA IRAYL/0/
+      DATA IUNRST/0/
+      DATA BMIN/4.5/,MSTEPS/16/,JRMAX/200/, FSTEP/1.,2.,3.,4.,6.,8.,10.,
+     *15.,20.,30.,40.,60.,80.,100.,150.,200./
+      DATA EPSTFL/0/,IEPST/1/,IAPRIM/1/,IAPRFL/0/
+      END
+      SUBROUTINE DIFFER
+      implicit none
+      real*4 AL183,F10,F20,A1DEN,A2DEN,B1DEN,B2DEN,C1DEN,C2DEN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/DBRPR/ALFP1(2),ALFP2(2),AL2
+      real*4 ALFP1,ALFP2,al2
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/RADLEN/ALRAD(4),ALRADP(4),A1440,A183
+      real*4 ALRAD,ALRADP,A1440,A183
+      AL2 = ALOG(2.)
+      AL183= ALOG(A183)
+      ALPHI(1)= AL2*(4./3. + 1./(9.*AL183*(1.+ZP)))
+      ALPHI(2)= AL2*(4./3. + 1./(9.*AL183*(1.+ZU)))
+      ALFP1(1)= 2./3. - 1./(36.*AL183*(1.+ZP))
+      ALFP1(2)= 2./3. - 1./(36.*AL183*(1.+ZU))
+      ALFP2(1)= (1./12.)*(4./3. + 1./(9.*AL183*(1+ZP)))
+      ALFP2(2)= (1./12.)*(4./3. + 1./(9.*AL183*(1+ZU)))
+      BPAR(1)= ALFP1(1)/(ALFP1(1)+ALFP2(1))
+      BPAR(2)= ALFP1(2)/(ALFP1(2)+ALFP2(2))
+      DELCM= 136.0*EXP(ZG)*RM
+      DELPOS(1)= (EXP((21.12+4.*ZG)/4.184)-0.952)/DELCM
+      DELPOS(2)= (EXP((21.12+4.*ZV)/4.184)-0.952)/DELCM
+      F10=4.*AL183
+      F20=F10 - 2./3.
+      A1DEN =3.0*F10- F20 + 8.0*ZG
+      A2DEN =3.0*F10- F20 + 8.0*ZV
+      B1DEN = F10 + 4.0*ZG
+      B2DEN = F10 + 4.0*ZV
+      C1DEN = 3.0*F10+ F20 + 16.0*ZG
+      C2DEN = 3.0*F10+ F20 + 16.0*ZV
+      DL1(1)= (3.0*20.867-20.209+8.0*ZG)/A1DEN
+      DL2(1)= (3.0*(-3.242)-(-1.930))/A1DEN
+      DL3(1)= (3.0*(0.625)-(0.086))/A1DEN
+      DL4(1)= (2.0*21.12+8.0*ZG)/A1DEN
+      DL5(1)= 2.0*(-4.184)/A1DEN
+      DL6(1)= 0.952
+      DL1(4)= (3.0*20.867-20.209+8.0*ZV)/A2DEN
+      DL2(4)= (3.0*(-3.242)-(-1.930))/A2DEN
+      DL3(4)= (3.0*(0.625)-(0.086))/A2DEN
+      DL4(4)= (2.0*21.12+8.0*ZV)/A2DEN
+      DL5(4)= 2.0*(-4.184)/A2DEN
+      DL6(4)= 0.952
+      DL1(2)= (20.867+4.0*ZG)/B1DEN
+      DL2(2)= -3.242/B1DEN
+      DL3(2)= 0.625/B1DEN
+      DL4(2)= (21.12+4.0*ZG)/B1DEN
+      DL5(2)= -4.184/B1DEN
+      DL6(2)= 0.952
+      DL1(5)= (20.867+4.0*ZV)/B2DEN
+      DL2(5)= -3.242/B2DEN
+      DL3(5)= 0.625/B2DEN
+      DL4(5)= (21.12+4.0*ZV)/B2DEN
+      DL5(5)= -4.184/B2DEN
+      DL6(5)= 0.952
+      DL1(3)= (3.0*20.867+20.209+16.0*ZG)/C1DEN
+      DL2(3)= (3.0*(-3.242)+(-1.930))/C1DEN
+      DL3(3)= (3.0*0.625+(-0.086))/C1DEN
+      DL4(3)= (4.0*21.12+16.0*ZG)/C1DEN
+      DL5(3)= 4.0*(-4.184)/C1DEN
+      DL6(3)= 0.952
+      DL1(6)= (3.0*20.867+20.209+16.0*ZV)/C2DEN
+      DL2(6)= (3.0*(-3.242)+(-1.930))/C2DEN
+      DL3(6)= (3.0*0.625+(-0.086))/C2DEN
+      DL4(6)= (4.0*21.12+16.0*ZV)/C2DEN
+      DL5(6)= 4.0*(-4.184)/C2DEN
+      DL6(6)= 0.952
+      WRITE(6,1740)
+1740  FORMAT(/,' IN SUBROUTINE DIFFER:'// ' DIFFERENTIAL CROSS-SECTION D
+     *ATA,COMMON BREMPR'/ ' DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6),AL
+     *PHI(2),BPAR(2),', 'DELCM,DELPOS(2)')
+      WRITE(6,1750)DL1,DL2,DL3,DL4,DL5,DL6,ALPHI,BPAR,DELCM,DELPOS
+1750  FORMAT(1X,6E14.5)
+      RETURN
+      END
+      SUBROUTINE EFUNS(E,V)
+      implicit none
+      real*4 E,V(8)
+      real*4 BREM,AMOLL,BHAB,ANNIH,ESIG,PSIG
+      real*4 BREMTM,AMOLTM,BHABTM,ANIHTM,SPTOTE,SPTOTP,TMXS
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      IF ((IUNRST.EQ.0 .OR. IUNRST.EQ.1 .OR. IUNRST.EQ.5)) THEN
+        BREM=BREMTM(E)
+        AMOLL=AMOLTM(E)
+        BHAB=BHABTM(E)
+        ANNIH=ANIHTM(E)
+        ESIG=BREM+AMOLL
+        V(1)=ESIG
+        PSIG=BREM+BHAB+ANNIH
+        V(2)=PSIG
+        V(3)=SPTOTE(E,AE,AP)
+        V(4)=SPTOTP(E,AE,AP)
+        IF ((ESIG.GT.0.0)) THEN
+          V(5)=BREM/ESIG
+        ELSE
+          IF ((THBREM.LE.THMOLL)) THEN
+            V(5)=1.0
+          ELSE
+            V(5)=0.0
+          END IF
+        END IF
+        V(6)=BREM/PSIG
+        V(7)=(BREM+BHAB)/PSIG
+        V(8)=TMXS(E)
+      ELSE IF((IUNRST.EQ.2)) THEN
+        V(1)=0.0
+        V(2)=0.0
+        V(5)=0.0
+        V(6)=0.0
+        V(7)=0.0
+        V(3) = SPTOTE(E,E,E)
+        V(4) = SPTOTP(E,E,E)
+        V(8) = TMXS(E)
+      ELSE IF((IUNRST.EQ.3)) THEN
+        BREM=BREMTM(E)
+        ANNIH=ANIHTM(E)
+        V(1)=BREM
+        V(2)=BREM + ANNIH
+        V(3)=SPTOTE(E,E,AP)
+        V(4)=SPTOTP(E,E,AP)
+        V(5)=1.0
+        V(6)=BREM/V(2)
+        V(7)=V(6)
+        V(8)=TMXS(E)
+      ELSE IF((IUNRST.EQ.4)) THEN
+        V(1)=AMOLTM(E)
+        V(2)=BHABTM(E)
+        V(3)=SPTOTE(E,AE,E)
+        V(4)=SPTOTP(E,AE,E)
+        V(5)=0.0
+        V(6)=0.0
+        V(7)=1.0
+        V(8)=TMXS(E)
+      ELSE
+        WRITE(6,1760)IUNRST
+1760    FORMAT(//'*********IUNRST=',I4,' NOT ALLOWED BY EFUNS*****'/ ' I
+     *UNRST=6 OR 7 ONLY ALLOWED WITH CALL OR PLTN OPTIONS'//)
+        call exit(20)
+      END IF
+      RETURN
+      END
+      SUBROUTINE GFUNS(E,V)
+      implicit none
+      real*4 E,V(4)
+      real*4 PAIR,COMP,PHOT,COHR,TSANSC,GMFP
+      real*4 PAIRTU,COMPTM,PHOTTE,COHETM
+      PAIR=PAIRTU(E)
+      COMP=COMPTM(E)
+      PHOT=PHOTTE(E)
+      COHR=COHETM(E)
+      TSANSC=PAIR+COMP+PHOT
+      GMFP=1.0/TSANSC
+      V(1)=GMFP
+      V(2)=PAIR*GMFP
+      V(3)=(PAIR+COMP)*GMFP
+      V(4)=TSANSC/(TSANSC+COHR)
+      RETURN
+      END
+      SUBROUTINE HPLT1(EI,EL,EH,ICAP,NTIMES,NBINS,NH,IDF,IDSIG, IRSIG,IT
+     *SIG)
+      implicit none
+      real*4 EI,EL,EH
+      integer*4 NTIMES,NBINS,NH(200),IDF,IDSIG,IRSIG,ITSIG
+      CHARACTER*4 ICAP(12)
+      integer*4 IBIN,I,J,IC
+      real*4 Y,AMAX,RTOT,TTOT,DFH,DELDF,DFL,DNORM,ELI,EHI,EINT,V
+      real*4 FI
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+      CHARACTER*4 L(100),CM,CR,CD,CBL
+      integer*4 IPNTS
+      DATA L/100*' '/,CM/'M'/,CR/'R'/,CD/'D'/,CBL/' '/,IPNTS/10/
+      IBIN(Y)=MAX0(1,MIN0(100,IFIX(Y/AMAX*100.)+1))
+      RTOT=FI(IRSIG,EI,EL,EH,0.)
+      TTOT=FI(ITSIG,EI,0.,0.,0.)
+      DFH=FI(IDF,EH,0.,0.,0.)
+      DFL=FI(IDF,EL,0.,0.,0.)
+      DELDF=(DFH-DFL)/NBINS
+      DNORM=RTOT/(DELDF*NTIMES)
+      AMAX=0.0
+      ELI=EL
+      DO 1771 I=1,NBINS
+        EHI=FI(IDF+1,DFL+DELDF*I,0.,0.,0.)
+        AMAX=AMAX1(AMAX,NH(I)*DNORM,FI(IRSIG,EI,ELI,EHI,0.)/DELDF)
+        DO 1781 J=1,IPNTS
+          EINT=FI(IDF+1,DFL+DELDF*(I-1+FLOAT(J-1)/(IPNTS-1)),0.,0.,0.)
+          AMAX=AMAX1(AMAX,FI(IDSIG,EI,EINT,0.,0.)/FI(IDF+2,EINT,0.,0.,0.
+     *    ))
+1781    CONTINUE
+1782    CONTINUE
+        ELI=EHI
+1771  CONTINUE
+1772  CONTINUE
+      WRITE(6,1790)ICAP,(FNAME(I,IDSIG),I=1,6),(FNAME(I,IRSIG),I=1,6), (
+     *FNAME(I,ITSIG),I=1,6),((FNAME(I,IDF+J-1),I=1,6),J=1,3),RTOT,TTOT
+1790  FORMAT('1HPLT FUNCTIONS:MONTE,DSIG,RSIG,TSIG,CDF,CDFINVERSE,PDF=',
+     *12A1,6(',',6A1)/' RTOT,TTOT=',1P,2E15.5)
+      WRITE(6,1800)ICAP,EI,EL,EH,NBINS,NTIMES,(NH(I),I=1,NBINS)
+1800  FORMAT(' HPLT:RAW EGS DATA FOR ROUTINE ',12A1,',EI,ELO,EHI=', 3F12
+     *.3,',NBINS,NTIMES=',2I10,',DATA='/(1X,10I10))
+      WRITE(6,1810)
+1810  FORMAT(' KEY TO PLOT,M=MONTECARLO DATA,R=THEORETICAL INTEGRALS', '
+     * OVER BINS,D=DIFFERENTIAL CROSS-SECTION'/ '    ENERGY          VAL
+     *UE')
+      ELI=EL
+      DO 1821 I=1,NBINS
+        EHI=FI(IDF+1,DFL+DELDF*I,0.,0.,0.)
+        V=NH(I)*DNORM
+        IC=IBIN(V)
+        L(IC)=CM
+        WRITE(6,1830)ELI,V,L
+1830    FORMAT(1X,1P,2E15.5,' I',100A1)
+        L(IC)=CBL
+        V=FI(IRSIG,EI,ELI,EHI,0.)/DELDF
+        IC=IBIN(V)
+        L(IC)=CR
+        WRITE(6,1840)ELI,V,L
+1840    FORMAT(1X,1P,2E15.5,' I',100A1)
+        L(IC)=CBL
+        DO 1851 J=1,IPNTS
+          EINT=FI(IDF+1,DFL+DELDF*(I-1+FLOAT(J-1)/(IPNTS-1)),0.,0.,0.)
+          V=FI(IDSIG,EI,EINT,0.,0.)/FI(IDF+2,EINT,0.,0.,0.)
+          IC=IBIN(V)
+          L(IC)=CD
+          WRITE(6,1860)EINT,V,L
+1860      FORMAT(1X,1P,2E15.5,' I',100A1)
+          L(IC)=CBL
+1851    CONTINUE
+1852    CONTINUE
+        ELI=EHI
+1821  CONTINUE
+1822  CONTINUE
+      RETURN
+      END
+      SUBROUTINE LAY
+      implicit none
+      integer*4 IP,IUECHO,IE,NSGE,NSEKE,NLEKE,NCMFP,NRANGE,NGE,NEKE,I,IF
+     *UN
+      integer*4 lnblnk1
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      COMMON/RSLTS/EBINDA,NEL,AXE,BXE,AFE(150,8),BFE(150,8), NGL,AXG,BXG
+     *,AFG(2000,4),BFG(2000,4),NGR,AXR,BXR,AFR(100), BFR(100)
+      real*4 EBINDA,AXE,BXE,AFE,BFE,AXG,BXG,AFG,BFG,AXR,BXR,AFR,BFR
+      integer*4 NEL,NGL,NGR
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      common/file_names/input_file,output_file,density_file, xsection_fi
+     *le,formf_file,egs_home,lenfn, using_sym_links
+      character*256 input_file,output_file,density_file,egs_home, xsecti
+     *on_file,formf_file
+      integer*4 lenfn
+      logical using_sym_links
+      character fn*512,line*80
+      logical is_there
+1870  FORMAT(1X,14I5)
+1880  FORMAT(1X,1P,5E14.5)
+      IP=7
+      IUECHO=6
+      WRITE(IP,1890) MEDIUM,IDSTRN
+1890  FORMAT(' MEDIUM=',24A1,',STERNCID=',24A1)
+      IF ((GASP.NE.0.0)) THEN
+        WRITE(IP,1900) MTYP,RHO,NE,GASP, IUNRST,EPSTFL,IAPRIM
+1900    FORMAT(1X,4A1,',RHO=',1P,E11.4,',NE=',I2,',GASP=', 1P,E11.4,', I
+     *UNRST=',I1,', EPSTFL=',I1,', IAPRIM=',I1)
+      ELSE
+        WRITE(IP,1910) MTYP,RHO,NE,IUNRST,EPSTFL,IAPRIM
+1910    FORMAT(1X,4A1,',RHO=',1P,E11.4,',NE=',I2,', IUNRST=',I1, ', EPST
+     *FL=',I1,', IAPRIM=',I1)
+      END IF
+      DO 1921 IE=1,NE
+        WRITE(IP,1930) ASYM(IE),Z(IE),WA(IE),PZ(IE),RHOZ(IE)
+1930    FORMAT(' ASYM=',A2,',Z=',F3.0,',A=',F9.3, ',PZ=',1P,E12.5,',RHOZ
+     *=',E12.5)
+1921  CONTINUE
+1922  CONTINUE
+      WRITE(IP,1880) RLC,AE,AP,UE,UP
+      NSGE=0
+      NSEKE=0
+      NLEKE=0
+      NCMFP=0
+      NRANGE=0
+      NGE=NGL
+      NEKE=NEL
+      WRITE(IP,1870)NSGE,NGE,NSEKE,NEKE,NLEKE,NCMFP,NRANGE,IRAYL,IUNRST
+      WRITE(IP,1880)(DL1(I),DL2(I),DL3(I),DL4(I),DL5(I),DL6(I),I=1,6)
+      WRITE(IP,1880) DELCM,(ALPHI(I),BPAR(I),DELPOS(I),I=1,2)
+      WRITE(IP,1880) XR0,TEFF0,BLCC,XCC
+      WRITE(IP,1880) BXE,AXE
+      WRITE(IP,1880) ((BFE(I,IFUN),AFE(I,IFUN),IFUN=1,8),I=1,NEKE)
+      WRITE(IP,1880) EBINDA,BXG,AXG
+      WRITE(IP,1880) ((BFG(I,IFUN),AFG(I,IFUN),IFUN=1,3),I=1,NGE)
+      IF ((IRAYL.NE.0)) THEN
+        WRITE(IP,1870) NGR
+        WRITE(IP,1880) BXR,AXR
+        WRITE(IP,1880) (BFR(I),AFR(I),I=1,NGR)
+        WRITE(IP,1880) (BFG(I,4),AFG(I,4),I=1,NGE)
+      END IF
+      fn = egs_home(:lnblnk1(egs_home))//'pegs4'//char(92)//'data'//char
+     *(92)//'pegs4.log'
+      inquire(file=fn,exist=is_there)
+      IF (( is_there )) THEN
+        open(33,file=fn,status='old',access='append',err=1940)
+      ELSE
+        open(33,file=fn,status='new',err=1940)
+      END IF
+      DO 1951 i=1,len(line)
+        line(i:i) = '-'
+1951  CONTINUE
+1952  CONTINUE
+      write(33,'(a)') line
+      write(33,'(a,24a1)') 'medium = ',medium
+      write(33,'(a,$)') 'data generated on: '
+      call egs_fdate(33)
+      write(33,*)
+      write(33,'(a,4a1,a,1pe11.4,a,i2,a,i1,a,i1,a,i1)') 'type=',mtyp, '
+     *rho=',rho,' ne=',ne,' iunrst=',iunrst,' epstfl=', epstfl,' iaprim=
+     *',iaprim
+      IF (( irayl .NE. 0 )) THEN
+        write(33,'(a)') 'Rayleigh data included'
+      ELSE
+        write(33,'(a)') 'Rayleigh data not included'
+      END IF
+      IF (( using_sym_links )) THEN
+        write(33,'(a)') 'pegs4 run using symbolik links => no info about
+     * file names available'
+        return
+      END IF
+      IF (( epstfl .EQ. 1 )) THEN
+        write(33,'(a,a)') 'density correction file: ', density_file(:lnb
+     *  lnk1(density_file))
+      END IF
+      write(33,'(a,a)') 'cross section data from: ', xsection_file(:lnbl
+     *nk1(xsection_file))
+      write(33,'(a,a)') 'form factor data from: ', formf_file(:lnblnk1(f
+     *ormf_file))
+      write(33,'(a,1pe14.5,a,1pe14.5,a,1pe14.5,a,1pe14.5)') 'ae=',ae,' a
+     *p=',ap,' ue=',ue,' up=',up
+      write(33,'(a,a)') 'data written to: ', output_file(:lnblnk1(output
+     *_file))
+      close(33)
+      RETURN
+1940  write(6,*) 'Failed to open pegs4 material log file'
+      return
+      END
+      SUBROUTINE MIX
+      implicit none
+      integer*4 I,IZZ
+      real*4 AL183,ZAB,V2000
+      real*4 FCOULC,XSIF
+      COMMON/MIMSD/BMIN,MSTEPS,JRMAX,MXV1,MXV2, MSMAP(200),FSTEP(16),FSQ
+     *R(16), VERT1(1000),VERT2(200,16)
+      integer*4 MSTEPS,JRMAX,MXV1,MXV2,MSMAP
+      real*4 BMIN,FSTEP,FSQR,VERT1,VERT2
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/RADLEN/ALRAD(4),ALRADP(4),A1440,A183
+      real*4 ALRAD,ALRADP,A1440,A183
+      real*4 XSI(20),ZZX(20),FZC(20),FCOUL(20),ZZ(20)
+      WRITE(6,1960)
+1960  FORMAT(/' IN SUBROUTINE MIX: '/)
+      IF ((GASP.EQ.0.0)) THEN
+        WRITE(6,1970)NE,RHO
+1970    FORMAT(' NUMBER OF ELEMENTS = ',I3,',  DENSITY=',1P,G15.6,' (G/C
+     *M**3)')
+      ELSE
+        WRITE(6,1980)NE,RHO,GASP
+1980    FORMAT(' NUMBER OF ELEMENTS = ',I3,',  DENSITY=',1P,G15.6,' (G/C
+     *M**3) AT NTP', '  GAS PRESSURE=',1P,G15.6,' ATM.')
+      END IF
+      WRITE(6,1990)(I,Z(I),WA(I),PZ(I),RHOZ(I),I=1,NE)
+1990  FORMAT('0  I       Z(I)           WA(I)          PZ(I)         RHO
+     *Z(I) '/ ' INDEX   PERIODIC        ATOMIC       PROPORTION     PROP
+     *ORTION '/ '          NUMBER         WEIGHT        BY NUMBER      B
+     *Y WEIGHT '// (I5,1P,4G15.6))
+      IF ((GASP.NE.0.0)) THEN
+        RHO=GASP*RHO
+      END IF
+      AL183 = ALOG(A183)
+      TPZ=0.0
+      WM=0.0
+      ZC=0.0
+      ZT=0.0
+      ZB=0.0
+      ZF=0.0
+      ZS=0.0
+      ZE=0.0
+      ZX=0.0
+      ZAB=0.0
+      DO 2001 I=1,NE
+        TPZ = TPZ + PZ(I)
+        WM = WM + PZ(I)*WA(I)
+        ZC = ZC + PZ(I)*Z(I)
+        FZC(I) =(FSC*Z(I))**2
+        FCOUL(I) = FCOULC(Z(I))
+        XSI(I) = XSIF (Z(I))
+        ZZX(I) = PZ(I)*Z(I)*(Z(I)+XSI(I))
+        IF ((Z(I).LE.4.0)) THEN
+          IZZ=Z(I)
+          ZAB=ZAB+ZZX(I)*ALRAD(IZZ)
+        ELSE
+          ZAB=ZAB+ZZX(I)*(AL183+ALOG(Z(I)**(-1./3.)))
+        END IF
+        ZT = ZT + ZZX(I)
+        ZB = ZB + ZZX(I)*ALOG(Z(I)**(-1./3.))
+        ZF = ZF + ZZX(I)*FCOUL(I)
+        ZZ(I) = PZ(I)*Z(I)*(Z(I)+1.0)
+        ZS = ZS + ZZ(I)
+        ZE = ZE + ZZ(I)*((-2./3.)*ALOG(Z(I)))
+        ZX = ZX + ZZ(I)*ALOG(1.+3.34*FZC(I))
+2001  CONTINUE
+2002  CONTINUE
+      EZ = ZC/TPZ
+      ZA = AL183*ZT
+      ZG = ZB/ZT
+      ZP = ZB/ZA
+      ZV = (ZB-ZF)/ZT
+      ZU = (ZB-ZF)/ZA
+      EDEN=AN*RHO/WM*ZC
+      RLC = 1./( (ZAB-ZF)*(AN*RHO/WM)*4.0*FSC*R0**2 )
+      WRITE(6,2010)WM,ZC,ZT,ZA,ZB,ZAB,ZF,ZG,ZP,ZV,ZU,ZS,ZE,ZX,RLC, (I,XS
+     *I(I),ZZX(I),FZC(I),FCOUL(I),ZZ(I),I=1,NE)
+2010  FORMAT('0Z VARIABLES--WM,ZC,ZT,ZA,ZB,ZAB'/1P,6E14.6/ '0ZF,ZG,ZP,ZV
+     *,ZU,ZS'/1P,6E14.6/'0ZE,ZX,RLC'/1P,3E14.6/ '0(I,XSI,ZZX,FZC,FCOUL,Z
+     *Z,I=1,NE)'/ (I5,1P,5E14.6))
+      BLCC= A6680*RHO*ZS*EXP(ZE/ZS)*RLC / (WM*EXP(ZX/ZS))
+      TEFF0 = ( EXP(BMIN)/BMIN )/BLCC
+      XCC= (A22P9/RADDEG) * SQRT( ZS*RHO*RLC/WM )
+      XR0 = XCC*SQRT(TEFF0*BMIN)
+      WRITE(6,2020)BLCC,XCC,TEFF0,XR0
+2020  FORMAT('0BLCC,XCC,TEFF0,XR0=',1P,4E14.5)
+      RETURN
+      END
+      SUBROUTINE MOLIER
+      implicit none
+      COMMON/MIMSD/BMIN,MSTEPS,JRMAX,MXV1,MXV2, MSMAP(200),FSTEP(16),FSQ
+     *R(16), VERT1(1000),VERT2(200,16)
+      integer*4 MSTEPS,JRMAX,MXV1,MXV2,MSMAP
+      real*4 BMIN,FSTEP,FSQR,VERT1,VERT2
+      integer*4 I,IS,J,L,JLR,ITOT,IDIF,N,I01,I02,ISWP,IFLG,IDA,INC,II,IS
+     *U,ISL, IUECHO,IPUN,MST
+      real*4 BLCMIN,BLC,B,BOLD,B1,PTOT,PPP,PP
+      real*4 P(29,16),Q(29,16),BLCA(16),BA(16)
+      integer*4 IP1(29,16),IP2(29),IXTR(29,16),IALL(29)
+      real*4 TH(29),DTH(29),F0(29),F1(29),F2(29)
+      DATA TH/.05,.2,.4,.6,.8,1.,1.2,1.4,1.6,1.8,2.,2.2,2.4,2.6,2.8, 3.,
+     *3.2,3.4,3.6,3.8,4.07,4.5,5.,5.5,6.13,7.,8.,9.,9.75/
+      DATA DTH/.1,19*0.2,0.35,3*0.5,0.75,3*1.0,0.5/
+      DATA F0/2.,1.9216,1.7214,1.4094,1.0546,.7338,.4738,.2817 ,.1546,.0
+     *783,.0366,.01581,.0063,.00232,7.9E-4,2.5E-4,7.3E-5, 1.9E-5,4.7E-6,
+     *1.1E-6,2.3E-7,3.E-9,2.E-11,2.E-13,5.E-16,1.E-21, 3.E-28,1.E-35,1.1
+     *8E-38/
+      DATA F1/.8456,.7038,.3437,-0.0777,-0.3981,-0.5285,-0.4770, -.3183,
+     *-.1396,-.0006,+0.0782,.1054,.1008,.08262,.06247,.0455, .03288,.024
+     *02,.01791,.01366,.010638,.00614,.003831,.002527, .001739,.000908,.
+     *0005211,.0003208,.0002084/
+      DATA F2/2.4929,2.0694,1.0488,-.0044,-.6068,-.6359,-.3086,.0525 ,.2
+     *423,.2386,.1316,.0196,-.0467,-.0649,-.0546,-.03568,-.01923, -.0084
+     *7,-.00264,5.E-5,.0010741,.0012294,.0008326,.0005368, .0003495,.000
+     *1584,7.83E-5,4.17E-5,2.37E-5/
+      save TH,DTH,F0,F1,F2
+      WRITE(6,2030)(TH(I),DTH(I),F0(I),F1(I),F2(I),I=1,29)
+2030  FORMAT('1BETHE TABLE USED FOR INPUT'/(1X,0P,2F10.2,1P,3E18.5))
+      IS=1
+        GO TO 2043
+2041    IS=IS+1
+2043    IF(IS-(MSTEPS-1).GT.0)GO TO 2042
+        J=FSTEP(IS)
+          GO TO 2053
+2051      J=J+1
+2053      IF(J-(FSTEP(IS+1)-1).GT.0)GO TO 2052
+          MSMAP(J)=IS
+        GO TO 2051
+2052    CONTINUE
+      GO TO 2041
+2042  CONTINUE
+      MSMAP(JRMAX)=MSTEPS
+      BLCMIN = BMIN - ALOG(BMIN)
+2060  CONTINUE
+        DO 2061 IS=1,MSTEPS
+        BLC=BLCMIN+ALOG(FSTEP(IS))
+        B=BLC+ALOG(BLC)
+2071    CONTINUE
+          BOLD=B
+          B=BOLD - (BOLD-ALOG(BOLD)-BLC)/(1.0-1.0/BOLD)
+          IF((ABS((B-BOLD)/BOLD) .LT. 1.E-5))GO TO2072
+        GO TO 2071
+2072    CONTINUE
+        BLCA(IS)=BLC
+        BA(IS)=B
+        FSQR(IS)=SQRT(FSTEP(IS)*B/BMIN)
+        B1=1.0/B
+        PTOT=0.0
+        DO 2081 I=1,29
+          P(I,IS)=TH(I)*DTH(I)*(F0(I)+B1*(F1(I)+B1*F2(I)))
+          PTOT=PTOT+P(I,IS)
+2081    CONTINUE
+2082    CONTINUE
+        DO 2091 I=1,29
+          P(I,IS)=P(I,IS)/PTOT
+2091    CONTINUE
+2092    CONTINUE
+        DO 2101 I=1,29
+          Q(I,IS)=P(I,IS)
+2101    CONTINUE
+2102    CONTINUE
+        I=29
+2111    CONTINUE
+          L=1
+2121      IF(Q(I,IS).GE.0.001.OR.I.LE.L)GO TO 2122
+            Q(I,IS)=Q(I,IS)+Q(I-L,IS)
+            Q(I-L,IS)=0.0
+            L=L+1
+          GO TO 2121
+2122      CONTINUE
+          I=I-L
+          IF((I.LE.0))GO TO2112
+        GO TO 2111
+2112    CONTINUE
+        PPP=0.5
+        PP=0.5
+        DO 2131 JLR=1,10
+          ITOT=0
+          DO 2141 I=1,29
+            IP1(I,IS)=Q(I,IS)*1000.0+PP
+            ITOT=ITOT+IP1(I,IS)
+2141      CONTINUE
+2142      CONTINUE
+          IDIF=ITOT-1000
+          IF((IDIF.EQ.0))GO TO 2061
+          PPP=PPP*0.5
+          IF ((IDIF.LT.0)) THEN
+            PP=PP+PPP
+          ELSE
+            PP=PP-PPP
+          END IF
+2131    CONTINUE
+2132    CONTINUE
+        DO 2151 I=1,29
+          IP2(I)=1
+2151    CONTINUE
+2152    CONTINUE
+        N=29
+2161    CONTINUE
+          N=N-1
+          IFLG=0
+          DO 2171 J=1,N
+            I01=IP2(J)
+            I02=IP2(J+1)
+            IF ((IP1(I01,IS).LT.IP1(I02,IS))) THEN
+              ISWP=IP2(J)
+              IP2(J)=IP2(J+1)
+              IP2(J+1)=ISWP
+              IFLG=1
+            END IF
+2171      CONTINUE
+2172      CONTINUE
+          IF((IFLG.EQ.0))GO TO2162
+        GO TO 2161
+2162    CONTINUE
+        WRITE(6,2180)ITOT
+2180    FORMAT(' ROUNDING FAILED, ITOT HAS',I6,' ENTRIES')
+        IF ((IDIF.LT.0)) THEN
+          IDA=-IDIF
+          INC=1
+        ELSE
+          IDA=IDIF
+          INC=-1
+        END IF
+        DO 2191 I=1,IDA
+          I01=IP2(I)
+          IP1(I01,IS)=IP1(I01,IS)+INC
+2191    CONTINUE
+2192    CONTINUE
+2061  CONTINUE
+2062  CONTINUE
+      MXV1=0
+      DO 2201 I=1,29
+        IALL(I)=IP1(I,1)
+        DO 2211 IS=2,MSTEPS
+          IALL(I)=MIN0(IALL(I),IP1(I,IS))
+2211    CONTINUE
+2212    CONTINUE
+        MXV1=MXV1+IALL(I)
+2201  CONTINUE
+2202  CONTINUE
+      MXV2=1000-MXV1
+      II=0
+      DO 2221 I=1,29
+        J=1
+          GO TO 2233
+2231      J=J+1
+2233      IF(J-(IALL(I)).GT.0)GO TO 2232
+          II=II+1
+          VERT1(II)=TH(I)
+        GO TO 2231
+2232    CONTINUE
+2221  CONTINUE
+2222  CONTINUE
+      DO 2241 IS=1,MSTEPS
+        II=0
+        DO 2251 I=1,29
+          IXTR(I,IS)=IP1(I,IS)-IALL(I)
+          J=1
+            GO TO 2263
+2261        J=J+1
+2263        IF(J-(IXTR(I,IS)).GT.0)GO TO 2262
+            II=II+1
+            VERT2(II,IS)=TH(I)
+          GO TO 2261
+2262      CONTINUE
+2251    CONTINUE
+2252    CONTINUE
+2241  CONTINUE
+2242  CONTINUE
+      WRITE(6,2270)BMIN,MSTEPS,JRMAX,MXV1,MXV2
+2270  FORMAT(' BMIN,MSTEPS,JRMAX,MXV1,MXV2=', F11.5,4I8)
+      ISU=0
+2281  CONTINUE
+        ISL=ISU+1
+        ISU=MIN0(ISL+9,MSTEPS)
+        WRITE(6,2290)ISL,ISU
+2290    FORMAT('1 DATA FOR STEPS ',I3,' TO ',I3)
+        WRITE(6,2300)(IS,IS=ISL,ISU)
+2300    FORMAT(11X,'ISTEP',I6,9I11)
+        WRITE(6,2310)(FSTEP(IS),IS=ISL,ISU)
+2310    FORMAT(11X,'FSTEP',10F11.0)
+        WRITE(6,2320)(FSQR(IS),IS=ISL,ISU)
+2320    FORMAT(11X,'FSQR ',10F11.5)
+        WRITE(6,2330)(BLCA(IS),IS=ISL,ISU)
+2330    FORMAT(11X,'BLC  ',10F11.5)
+        WRITE(6,2340)(BA (IS),IS=ISL,ISU)
+2340    FORMAT(11X,'B    ',10F11.5)
+        WRITE(6,2350)
+2350    FORMAT('0I  TH IALL')
+        DO 2361 I=1,29
+          IF (((I.EQ.11).OR.(I.EQ.23))) THEN
+            WRITE(6,2370)
+2370        FORMAT('1I  TH IALL')
+          END IF
+          WRITE(6,2380)I,TH(I),IALL(I),(P(I,IS),IS=ISL,ISU)
+2380      FORMAT(1X,I2,F5.2,I4,' PR ',10F11.8)
+          WRITE(6,2390)(Q(I,IS),IS=ISL,ISU)
+2390      FORMAT(11X,'  Q  ',10F11.8)
+          WRITE(6,2400)(IP1(I,IS),IS=ISL,ISU)
+2400      FORMAT(11X,' IP1 ',I7,9I11)
+          WRITE(6,2410)(IXTR(I,IS),IS=ISL,ISU)
+2410      FORMAT(11X,'EXTRA',I7,9I11)
+2361    CONTINUE
+2362    CONTINUE
+        IF((ISU.GE.MSTEPS))GO TO2282
+      GO TO 2281
+2282  CONTINUE
+2420  FORMAT(1X,14I5)
+2430  FORMAT(1X,14F5.2)
+      IUECHO=6
+      IPUN=7
+      WRITE(IPUN,2440)
+2440  FORMAT(' MATERIAL INDEPENDENT MULTIPLE SCATTERING DATA')
+      WRITE(IPUN,2420) JRMAX,MSTEPS,MXV1,MXV2
+      WRITE(IPUN,2450) (FSTEP(I),FSQR(I),I=1,MSTEPS)
+2450  FORMAT((1X,4(F5.0,F11.6)))
+      WRITE(IPUN,2420) (MSMAP(I),I=1,JRMAX)
+      WRITE(IPUN,2430) (VERT1(I),I=1,MXV1)
+      DO 2461 MST=1,MSTEPS
+        WRITE(IUECHO,2470)MST
+2470    FORMAT(' MST=',I5)
+        WRITE(IPUN,2430) (VERT2(I,MST),I=1,MXV2)
+2461  CONTINUE
+2462  CONTINUE
+      RETURN
+      END
+      SUBROUTINE PLOT(IFUN,XP,IV,EL,EH,NPT,IDF)
+      implicit none
+      integer*4 ifun,IV,NPT,IDF
+      real*4 EL,EH
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      common/file_names/input_file,output_file,density_file, xsection_fi
+     *le,formf_file,egs_home,lenfn, using_sym_links
+      character*256 input_file,output_file,density_file,egs_home, xsecti
+     *on_file,formf_file
+      integer*4 lenfn
+      logical using_sym_links
+      integer*4 IXTABF,NMAX,NUPL,ITAB,IXT1,IXT2,NU,IDFI,NA,IP,JA,IA,IBIN
+     *,J,I
+      real*4 DFL,DFH,BDF,YMAX,X,DY
+      real*4 FI
+      CHARACTER*4 PBUF(101),ID(5),ORDNL(3,4),ICOM,IRPAR,ICOL,IX,IBL
+      real*4 XTAB(200),XTABA(18),YSAV(200),XP(4),XQ(5)
+      logical first_time
+      DATA XTABA/1. ,1.25 ,1.5 ,1.75 ,2. ,2.5 ,3. ,3.5 ,4. ,4.5,4.9488 ,
+     *5. ,5.5 ,6. ,7. ,8. ,9. ,10./
+      DATA IXTABF/0/
+      DATA ICOM/','/,IRPAR/')'/,ICOL/':'/,ORDNL/'1','S','T','2','N','D',
+     *'3','R','D','4','T','H'/
+      DATA PBUF/'I',100*' '/,NMAX/200/,NUPL/6/,IX/'X'/,IBL/' '/
+      DATA first_time/.true./
+      save XTABA,IXTABF,ICOM,IRPAR,ICOL,ORDNL,PBUF,NMAX,NUPL,IX,IBL, fir
+     *st_time
+      IF (( first_time )) THEN
+        first_time = .false.
+        output_file(lenfn-7:lenfn) = 'plot    '
+        open(21,file=output_file,status='unknown')
+      END IF
+      IF ((IXTABF.EQ.0)) THEN
+        ITAB= 0
+        DO 2481 IXT1=0,6
+          DO 2491 IXT2=1,17
+            IF ((IXT2.NE.11)) THEN
+              ITAB=ITAB+ 1
+              XTAB(ITAB)=XTABA(IXT2)*10.**(IXT1-3)
+            ELSE IF((IXT2.EQ.11 .AND. IXT1.EQ.4)) THEN
+              ITAB=ITAB+ 1
+              XTAB(ITAB)=XTABA(IXT2)*10.**(IXT1-3)
+            END IF
+2491      CONTINUE
+2492      CONTINUE
+2481    CONTINUE
+2482    CONTINUE
+        ITAB=ITAB+1
+        XTAB(ITAB)=XTABA(18)*10.**(6-3)
+        IXTABF=1
+        NU=ITAB
+      END IF
+      IDFI=IDF+1
+      NA=NFARG(IFUN)
+      DFL=FI(IDF,EL,0.,0.,0.)
+      DFH=FI(IDF,EH,0.,0.,0.)
+      BDF=(DFH-DFL)/FLOAT(NU-1)
+      YMAX=0.0
+      DO 2501 IP=1,NU
+        X=XTAB(IP)+RM
+        XP(IV)=X
+        YSAV(IP)=FI(IFUN,XP(1),XP(2),XP(3),XP(4))/(RLC*RHO)
+        YMAX=AMAX1(YSAV(IP),YMAX)
+2501  CONTINUE
+2502  CONTINUE
+      DY=YMAX/100.
+      JA=0
+      DO 2511 IA=1,NA
+        JA=JA+1
+        IF ((IA.NE.IV)) THEN
+          XQ(JA)=XP(IA)
+          ID(JA)=ICOM
+        ELSE
+          XQ(JA)=EL
+          ID(JA)=ICOL
+          JA=JA+1
+          XQ(JA)=EH
+          ID(JA)=ICOM
+        END IF
+2511  CONTINUE
+2512  CONTINUE
+      ID(JA)=IRPAR
+      WRITE(NUPL,2520)(FNAME(I,IFUN),I=1,6),(XQ(I),ID(I),I=1,JA)
+2520  FORMAT ('1PLOT OF FUNCTION ',6A1,'(',5(1P,G15.6,1X,A1) )
+      WRITE(NUPL,2530)(ORDNL(I,IV),I=1,3),NU,EL,EH, (FNAME(I,IDF),I=1,6)
+     *,(FNAME(I,IDFI),I=1,6),DY
+2530  FORMAT (' THE ',3A1,' ARGUMENT IS CHOSEN AT ',I4, ' POINTS FROM ',
+     *1P,G15.6, ' TO ', 1P,G15.6/' USING DISTRIBUTION FUNCTION ',6A1,' A
+     *ND INVERSE ', 'DISTRIBUTION FUNCTION ',6A1,'.  EACH X=',1P,G15.6/'
+     *0    X(OR E)    Y1')
+      WRITE(NUPL,2540)RLC,RHO
+2540  FORMAT (/' ***CHANGED VERSION OF PEGS WHICH HAS DIVIDED THE VALUES
+     * BY', ' RLC*RHO TO GET TO MeV/g/cm**2'/'  RLC=',E12.4,'  RHO=',E12
+     *.4)
+      DO 2551 IP=1,NU
+        X=XTAB(IP)
+        IF ((DY.NE.0.0)) THEN
+          IBIN=YSAV(IP)/DY+1.0
+        ELSE
+          IBIN=1
+        END IF
+        IF((IBIN.GE.2))PBUF(IBIN)=IX
+        WRITE(NUPL,2560)IP,X,YSAV(IP),(PBUF(J),J=1,IBIN)
+2560    FORMAT (1X,I3,1P,2G13.6,1X,101A1)
+        IF((IBIN.GE.2))PBUF(IBIN)=IBL
+2551  CONTINUE
+2552  CONTINUE
+      WRITE(21,*) NU
+      WRITE(21,2570) (XTAB(IP),IP=1,NU)
+      WRITE(21,*) NU
+      WRITE(21,2570) (YSAV(IP),IP=1,NU)
+2570  FORMAT(5(1P,E15.7))
+      RETURN
+      END
+      SUBROUTINE PLOT1(IFUN,XP,IV,EL,EH,NPT,IDF)
+      implicit none
+      integer*4 IFUN,IV,NPT,IDF
+      real*4 EL,EH
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+      CHARACTER*4 PBUF(101),ID(5),ORDNL(3,4),ICOM,IRPAR,ICOL,IX,IBL
+      real*4 YSAV(200),XP(4),XQ(5)
+      integer*4 NMAX,NUPL,NU,IDFI,NA,IP,I,JA,IA,IBIN,J
+      real*4 DFL,FI,DFH,BDF,YMAX,DF,X,DY
+      DATA ICOM/','/,IRPAR/')'/,ICOL/':'/,ORDNL/'1','S','T','2','N','D',
+     *'3','R','D','4','T','H'/
+      DATA PBUF/'I',100*' '/,NMAX/200/,NUPL/6/,IX/'X'/,IBL/' '/
+      NU=MIN0(NPT,NMAX)
+      IDFI=IDF+1
+      NA=NFARG(IFUN)
+      DFL=FI(IDF,EL,0.,0.,0.)
+      DFH=FI(IDF,EH,0.,0.,0.)
+      BDF=(DFH-DFL)/FLOAT(NU-1)
+      YMAX=0.0
+      DO 2581 IP=1,NU
+        I=IP-1
+        DF=DFL+BDF*FLOAT(I)
+        X=FI(IDFI,DF,0.,0.,0.)
+        XP(IV)=X
+        YSAV(IP)=FI(IFUN,XP(1),XP(2),XP(3),XP(4))
+        YMAX=AMAX1(YSAV(IP),YMAX)
+2581  CONTINUE
+2582  CONTINUE
+      DY=YMAX/100.
+      JA=0
+      DO 2591 IA=1,NA
+        JA=JA+1
+        IF ((IA.NE.IV)) THEN
+          XQ(JA)=XP(IA)
+          ID(JA)=ICOM
+        ELSE
+          XQ(JA)=EL
+          ID(JA)=ICOL
+          JA=JA+1
+          XQ(JA)=EH
+          ID(JA)=ICOM
+        END IF
+2591  CONTINUE
+2592  CONTINUE
+      ID(JA)=IRPAR
+      WRITE(NUPL,2600)(FNAME(I,IFUN),I=1,6),(XQ(I),ID(I),I=1,JA)
+2600  FORMAT ('1PLOT OF FUNCTION ',6A1,'(',5(1P,G15.6,1X,A1) )
+      WRITE(NUPL,2610)(ORDNL(I,IV),I=1,3),NU,EL,EH, (FNAME(I,IDF),I=1,6)
+     *,(FNAME(I,IDFI),I=1,6),DY
+2610  FORMAT (' THE ',3A1,' ARGUMENT IS CHOSEN AT ',I4, ' POINTS FROM ',
+     *1P,G15.6, ' TO ', 1P,G15.6/' USING DISTRIBUTION FUNCTION ',6A1,' A
+     *ND INVERSE ', 'DISTRIBUTION FUNCTION ',6A1,'.  EACH X=',1P,G15.6/'
+     *0    X(OR E)    Y1')
+      DO 2621 IP=1,NU
+        I=IP-1
+        X=FI(IDFI,DFL+BDF*FLOAT(I),0.,0.,0.)
+        IF ((DY.NE.0.0)) THEN
+          IBIN=YSAV(IP)/DY+1.0
+        ELSE
+          IBIN=1
+        END IF
+        IF((IBIN.GE.2))PBUF(IBIN)=IX
+        WRITE(NUPL,2630)IP,X,YSAV(IP),(PBUF(J),J=1,IBIN)
+2630    FORMAT (1X,I3,1P,2G13.6,1X,101A1)
+        IF((IBIN.GE.2))PBUF(IBIN)=IBL
+2621  CONTINUE
+2622  CONTINUE
+      RETURN
+      END
+      SUBROUTINE PMDCON
+      implicit none
+      real*4 FSCI
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      PI=3.1415926536
+      C=2.997925E+10
+      RME=9.1091E-28
+      HBAR=1.05450E-27
+      ECGS=4.80298E-10
+      EMKS=1.60210E-19
+      AN=6.02252E+23
+      RADDEG=180./PI
+      FSC = ECGS**2/(HBAR*C)
+      FSCI=1./FSC
+      ERGMEV = (1.E+6)*(EMKS*1.E+7)
+      R0 = (ECGS**2)/(RME*C**2)
+      RM = RME*C**2/ERGMEV
+      RMT2 = RM*2.0
+      RMSQ = RM*RM
+      A22P9 = RADDEG*SQRT(4.*PI*AN)*ECGS**2/ERGMEV
+      A6680 = 4.0*PI*AN*(HBAR/(RME*C))**2*(0.885**2/(1.167*1.13))
+      RETURN
+      END
+      SUBROUTINE PWLF1(NI,NIMX,XL,XU,XR,EP,ZTHR,ZEP,NIP,XFUN,XFI, AX,BX,
+     *NALM,NFUN,AF,BF,VFUNS)
+      implicit none
+      integer*4 NI,NIMX,NIP,NALM,NFUN
+      real*4 XL,XU,XR,EP,AX,BX
+      EXTERNAL XFUN,XFI,VFUNS
+      real*4 AF(NALM,NFUN),BF(NALM,NFUN),ZTHR(NFUN),ZEP(NFUN)
+      LOGICAL QFIT
+      integer*4 NL,NU,IPRN,NJ,NK
+      real*4 REM
+      NL=0
+      NU=1
+      IPRN=0
+2641  CONTINUE
+        NJ=MIN0(NU,NIMX)
+        IF((QFIT(NJ,XL,XU,XR,EP,ZTHR,ZEP,REM,NIP,XFUN,XFI, AX,BX,NALM,NF
+     *  UN,AF,BF,VFUNS,0)))GO TO2642
+        IF ((NU.GE.NIMX)) THEN
+          WRITE(6,2650)NIMX,EP
+2650      FORMAT(' NUMBER OF ALLOCATED INTERVALS(=',I5,') WAS INSUFFICIE
+     *NT' ,/ ,' TO GET MAXIMUM RELATIVE ERROR LESS THAN ',1P,G14.6)
+          NI=NJ
+          RETURN
+        END IF
+        NL=NU
+        NU=NU*2
+      GO TO 2641
+2642  CONTINUE
+      NU=NJ
+2661  IF(NU.LE.NL+1)GO TO 2662
+        NJ=(NL+NU)/2
+        NK=NJ
+        IF ((QFIT(NJ,XL,XU,XR,EP,ZTHR,ZEP,REM,NIP,XFUN,XFI, AX,BX,NALM,N
+     *  FUN,AF,BF,VFUNS,0))) THEN
+          NU=NJ
+        ELSE
+          NL=NK
+        END IF
+      GO TO 2661
+2662  CONTINUE
+      NI=NU
+      IF((NI.EQ.NJ))RETURN
+      IF((.NOT.QFIT(NI,XL,XU,XR,EP,ZTHR,ZEP,REM,NIP,XFUN,XFI, AX,BX,NALM
+     *,NFUN,AF,BF,VFUNS,0)))WRITE(6,2670)NI
+2670  FORMAT(' CATASTROPHE---DOES NOT FIT WHEN IT SHOULD,NI=',I5)
+      RETURN
+      END
+      SUBROUTINE RFUNS(E,V)
+      implicit none
+      real*4 E,V(1),AINTP
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      V(1)=AINTP(E,AFFI(1),87,XVAL(1),1,.TRUE.,.TRUE.)
+      RETURN
+      END
+      SUBROUTINE SPINIT
+      implicit none
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/SPCOMM/NMED,STDATA(6,73)
+      integer*4 NMED
+      real*4 STDATA
+      COMMON/SPCOMC/MEDTBL(24,73)
+      CHARACTER*4 MEDTBL
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/ELEMTB/NET,WATBL(100),RHOTBL(100), ITBL(100),ISTATB(100)
+      real*4 ITBL
+      COMMON/ELMTBC/ASYMT(100)
+      CHARACTER*4 ASYMT
+      integer*4 net,istatb
+      real*4 watbl,rhotbl
+      COMMON/LSPION/CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      real*4 CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      real*4 IMEV
+      integer*4 IM,J,IZ,IE,I,ICHECK,IESPEL,IPEGEL
+      real*4 VPLASM,ALIADG,EDENL,ALGASP,EPSTRH,V2930,V2950,V2970,V2990,
+     *V3050,V3070,V3090,TLRNCE,EPSTWT,V3010,V3030
+      TOLN10=2.0*ALOG(10.0)
+      IM=-100
+      IF ((EPSTFL .LT. 0 .OR. EPSTFL .GT. 1)) THEN
+        EPSTFL = 0
+      END IF
+      IF ((EPSTFL.EQ.0)) THEN
+        IF ((ISSB.NE.0)) THEN
+          IF (( AFACT.EQ.0.0 .OR. CBAR.LE.0.0 .OR. SK.EQ.0.0 .OR. X0.EQ.
+     *    0.0 .OR. X1.EQ.0.0 .OR. IEV.EQ.0.0 )) THEN
+            WRITE(6,2680)
+2680        FORMAT(//'0*****USER ERROR -NOT ALL DENSITY EFFECT PARAMTERS
+     * INPUT', '   CODE STOPPED IN SPINIT****'//)
+            call exit(21)
+          END IF
+          IMEV=IEV*1.E-6
+          VPLASM=SQRT(EDEN/PI*R0*C**2)
+          IM=-1
+        ELSE
+          IF ((ISSB.EQ.0.AND.(AFACT.NE.0.0.OR.CBAR.NE.0.0.OR.SK.NE.0.0.
+     *    OR.X0.NE.0.0.OR.X1.NE.0.0.OR.IEV.NE.0.0))) THEN
+            WRITE(6,2690)
+2690        FORMAT(//,' STOPPED IN SPINIT: INCORRECT USER-OVERRIDE OF SS
+     *B-DATA')
+            call exit(21)
+          END IF
+2700      CONTINUE
+            DO 2701 IM=1,NMED
+            DO 2711 J=1,LMED
+              IF((IDSTRN(J).NE.MEDTBL(J,IM)))GO TO 2701
+2711        CONTINUE
+2712        CONTINUE
+            AFACT=STDATA(1,IM)
+            SK=STDATA(2,IM)
+            X0=STDATA(3,IM)
+            X1=STDATA(4,IM)
+            IEV=STDATA(5,IM)
+            CBAR=STDATA(6,IM)
+            IMEV=IEV*1.0E-6
+            VPLASM=SQRT(EDEN/PI*R0*C**2)
+            GO TO 2720
+2701      CONTINUE
+2702      CONTINUE
+          IM=0
+          IF ((NE.EQ.1)) THEN
+            IZ=Z(1)
+            IF ((IZ.EQ.1.OR.IZ.EQ.7.OR.IZ.EQ.8)) THEN
+              WRITE(6,2730)
+2730          FORMAT(' STOPPED IN SUBROUTINE SPINIT BECAUSE THIS',/, ' E
+     *LEMENT (H, N, OR O) CAN ONLY EXIST AS A DIATOMIC MOLECULE.',/, ' R
+     *EMEDY:  USE COMP OPTION FOR H2, N2, OR O2 WITH NE=2,PZ=1,1'/, '   
+     *    AND, IN THE CASE OF A GAS, DEFINE STERNHEIMER ID',/, '     (I.
+     *E., IDSTRN) LIKE H2-GAS')
+              call exit(21)
+            END IF
+            IEV=ITBL(IZ)
+          ELSE
+            ALIADG=0.0
+            DO 2741 IE=1,NE
+              IZ=Z(IE)
+              IF ((IZ.EQ.1)) THEN
+                IEV=19.2
+              ELSE IF((IZ.EQ.6)) THEN
+                IF ((GASP.EQ.0.0)) THEN
+                  IEV=81.0
+                ELSE
+                  IEV=70.0
+                END IF
+              ELSE IF((IZ.EQ.7)) THEN
+                IEV=82.0
+              ELSE IF((IZ.EQ.8)) THEN
+                IF ((GASP.EQ.0.0)) THEN
+                  IEV=106.0
+                ELSE
+                  IEV=97.0
+                END IF
+              ELSE IF((IZ.EQ.9)) THEN
+                IEV=112.0
+              ELSE IF((IZ.EQ.17)) THEN
+                IEV=180.0
+              ELSE
+                IEV=1.13*ITBL(IZ)
+              END IF
+              ALIADG=ALIADG + PZ(IE)*Z(IE)*ALOG(IEV)
+2741        CONTINUE
+2742        CONTINUE
+            ALIADG=ALIADG/ZC
+            IEV=EXP(ALIADG)
+          END IF
+          IMEV=IEV*1.0E-6
+          IF ((GASP.EQ.0.0)) THEN
+            EDENL=EDEN
+          ELSE
+            EDENL=EDEN/GASP
+          END IF
+          VPLASM = SQRT(EDENL/PI*R0*C**2)
+          CBAR=1. + 2.*ALOG(IMEV/(HBAR*2*PI*VPLASM/ERGMEV))
+          IF ((NE.EQ.1.AND.IFIX(Z(1)).EQ.2.AND.GASP.NE.0.0)) THEN
+            X0=2.191
+            X1=3.0
+            SK=3.297
+          ELSE IF((NE.EQ.2.AND.IFIX(Z(1)).EQ.1.AND.IFIX(Z(2)).EQ.1)) THE
+     *    N
+            IF ((GASP.EQ.0.0)) THEN
+              X0=0.425
+              X1=2.0
+              SK=5.949
+            ELSE
+              X0=1.837
+              X1=3.0
+              SK=4.754
+            END IF
+          ELSE
+            SK=3.0
+            IF ((GASP.EQ.0.0)) THEN
+              IF ((IEV.LT.100.0)) THEN
+                IF ((CBAR.LT.3.681)) THEN
+                  X0=0.2
+                  X1=2.0
+                ELSE
+                  X0=0.326*CBAR - 1.0
+                  X1=2.0
+                END IF
+              ELSE
+                IF ((CBAR.LT.5.215)) THEN
+                  X0=0.2
+                  X1=3.0
+                ELSE
+                  X0=0.326*CBAR - 1.5
+                  X1=3.0
+                END IF
+              END IF
+              IF ((X0.GE.X1)) THEN
+                WRITE(6,2750)X0,X1,CBAR
+2750            FORMAT(' STOPPED IN SPINIT DUE TO X0.GE.X1 , X0,X1,CBAR=
+     *',3G15.5,/ ,' IF THIS IS GAS, YOU MUST DEFINE GASP(ATM)')
+                call exit(21)
+              END IF
+            ELSE
+              IF ((CBAR.LT.10.0)) THEN
+                X0=1.6
+                X1=4.0
+              ELSE IF((CBAR.LT.10.5)) THEN
+                X0=1.7
+                X1=4.0
+              ELSE IF((CBAR.LT.11.0)) THEN
+                X0=1.8
+                X1=4.0
+              ELSE IF((CBAR.LT.11.5)) THEN
+                X0=1.9
+                X1=4.0
+              ELSE IF((CBAR.LT.12.25)) THEN
+                X0=2.0
+                X1=4.0
+              ELSE IF((CBAR.LT.13.804)) THEN
+                X0=2.0
+                X1=5.0
+              ELSE
+                X0=0.326*CBAR - 2.5
+                X1=5.0
+              END IF
+            END IF
+          END IF
+        END IF
+2720    IF ((GASP.NE.0.0)) THEN
+          ALGASP=ALOG(GASP)
+          CBAR=CBAR - ALGASP
+          X0=X0 - ALGASP/TOLN10
+          X1=X1 - ALGASP/TOLN10
+        END IF
+        IF ((IM.EQ.0)) THEN
+          AFACT=(CBAR - TOLN10*X0)/(X1 - X0)**SK
+        END IF
+      ELSE
+        READ(20,2760)EPSTTL
+2760    FORMAT(A)
+        READ(20,*) NEPST,IEV,EPSTRH,NELEPS
+        READ(20,*) (ZEPST(I),WEPST(I),I=1,NELEPS)
+        READ(20,*) (EPSTEN(I),EPSTD(I),I=1,NEPST)
+        IF ((NEPST.GT.150)) THEN
+          WRITE(6,2770)NEPST
+2770      FORMAT(//' *****NEPST=',I4,' IS GREATER THAN THE 150 ALLOWED')
+          call exit(22)
+        END IF
+        DO 2781 I=1,NEPST
+          EPSTEN(I) = EPSTEN(I) + RM
+2781    CONTINUE
+2782    CONTINUE
+        IMEV = IEV*1.E-06
+        IF (( AE .LT. EPSTEN(1))) THEN
+          WRITE(6,2790)EPSTEN(1),AE
+2790      FORMAT(//' ****LOWEST ENERGY INPUT FOR DENSITY EFFECT IS',1P,E
+     *10.3/ T20,'WHICH IS HIGHER THAN THE VALUE OF AE=',1P,E10.3,' MEV'/
+     * ' ***IT HAS BEEN SET TO AE***'//)
+          EPSTEN(1) = AE
+        END IF
+        IF (( UE .GT. EPSTEN(NEPST))) THEN
+          WRITE(6,2800)EPSTEN(NEPST),UE
+2800      FORMAT(//' ****HIGHEST ENERGY INPUT FOR DENSITY EFFECT IS',1P,
+     *E10.3/ T20,'WHICH IS LOWER THAN THE VALUE OF UE=',1P,E10.3,' MEV'/
+     * ' ***IT HAS BEEN SET TO UE***'//)
+          EPSTEN(NEPST) = UE
+        END IF
+        ICHECK=0
+        TLRNCE=0.01
+        IF((NELEPS.NE.NE))ICHECK=1
+        IF(((ICHECK.EQ.0) .AND. ( (EPSTRH.LT.((1.0-TLRNCE)*RHO)) .OR. (E
+     *  PSTRH.GT.((1.0+TLRNCE)*RHO)) )))ICHECK=1
+        EPSTWT = 0.0
+        DO 2811 I=1,NE
+          EPSTWT = EPSTWT + RHOZ(I)
+2811    CONTINUE
+2812    CONTINUE
+        IF ((EPSTWT.EQ.0.0)) THEN
+          WRITE(6,2820)
+2820      FORMAT(//' *****IN SPINIT***SOMETHING WRONG, MOLECULAR WEIGHTO
+     *F', 'MOLECULE IS ZERO (I.E. SUM OF RHOZ)***'//)
+        END IF
+        IF ((ICHECK.EQ.0)) THEN
+          IESPEL=0
+          ICHECK=1
+2831      CONTINUE
+            IESPEL=IESPEL+1
+            IPEGEL=0
+2841        CONTINUE
+              IPEGEL=IPEGEL+1
+              IF ((IFIX(Z(IPEGEL)).EQ.ZEPST(IESPEL))) THEN
+                ICHECK=0
+                GO TO2842
+              END IF
+              IF(IPEGEL.GE.NE)GO TO2842
+            GO TO 2841
+2842        CONTINUE
+            IF(((ICHECK.EQ.0)  .AND. ( (WEPST(IESPEL).LT.((1.0-TLRNCE)*R
+     *      HOZ(IPEGEL)/EPSTWT)) .OR. (WEPST(IESPEL).GT.((1.0+TLRNCE)*RH
+     *      OZ(IPEGEL)/EPSTWT)) )))ICHECK=1
+            IF(IESPEL.GE.NELEPS)GO TO2832
+          GO TO 2831
+2832      CONTINUE
+        END IF
+        IF ((ICHECK.EQ.1)) THEN
+          WRITE(6,2850)
+2850      FORMAT(////'0*** COMPOSITION IN INPUT DENSITY FILE DOES NOT MA
+     *TCH ', ' THAT BEING USED BY PEGS'//' ***** QUITTING EARLY***'////)
+          call exit(23)
+        END IF
+      END IF
+      SPC1=2.*PI*R0**2*RM*EDEN*RLC
+      SPC2=ALOG((IMEV/RM)**2/2.0)
+      WRITE(6,2860)
+2860  FORMAT(//' PARAMETERS COMPUTED IN SPINIT.'//1X,64('-'))
+      IF ((IM.EQ.0)) THEN
+        WRITE(6,2870)
+2870    FORMAT(' STERNHEIMER-PEIERLS GENERAL FORMULA USED FOR THE DENSIT
+     *Y EFFECT,')
+      ELSE IF((IM.GT.0)) THEN
+        WRITE(6,2880)
+2880    FORMAT(' STERNHEIMER-SELTZER-BERGER TABLE USED FOR DENSITY EFFEC
+     *T')
+      ELSE IF((IM .EQ. -1)) THEN
+        WRITE(6,2890)
+2890    FORMAT(' STERNHEIMER-SELTZER-BERGER DENSITY EFFECT DATA SUPPLIED
+     * BY USER')
+      ELSE
+        WRITE(6,2900)EPSTTL
+2900    FORMAT(' DENSITY EFFECT READ IN DIRECTLY:'/T10,A)
+      END IF
+      WRITE(6,2910)
+2910  FORMAT(1X,64('-')/)
+      WRITE(6,2920)IEV
+2920  FORMAT(/' ADJUSTED MEAN IONIZATION = ',F8.2,' EV'/1X,38('-')//)
+      IF ((EPSTFL .EQ. 0)) THEN
+        V2930=IEV
+        WRITE(6,2940)V2930
+2940    FORMAT(' IEV=',1P,G15.7)
+        V2950=VPLASM
+        WRITE(6,2960)V2950
+2960    FORMAT(' VPLASM=',1P,G15.7)
+        V2970=CBAR
+        WRITE(6,2980)V2970
+2980    FORMAT(' CBAR=',1P,G15.7)
+        V2990=X0
+        WRITE(6,3000)V2990
+3000    FORMAT(' X0=',1P,G15.7)
+        V3010=X1
+        WRITE(6,3020)V3010
+3020    FORMAT(' X1=',1P,G15.7)
+        V3030=SK
+        WRITE(6,3040)V3030
+3040    FORMAT(' SK=',1P,G15.7)
+        V3050=AFACT
+        WRITE(6,3060)V3050
+3060    FORMAT(' AFACT=',1P,G15.7)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION ADDMOL(X)
+      implicit none
+      real*4 X
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ADDMOL=1.0/(X-RM)**2
+      RETURN
+      END
+      real*4 FUNCTION ADFMOL(X)
+      implicit none
+      real*4 X
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ADFMOL=-1.0/(X-RM)
+      RETURN
+      END
+      real*4 FUNCTION ADIMOL(X)
+      implicit none
+      real*4 X
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ADIMOL=-1.0/X+RM
+      RETURN
+      END
+      real*4 FUNCTION AFFACT(X)
+      implicit none
+      real*4 X,AINTP
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      AFFACT=AINTP(X,XVAL(1),100,AFAC2(1),1,.TRUE.,.TRUE.)
+      RETURN
+      END
+      real*4 FUNCTION AINTP(X,XA,NX,YA,ISK,XLOG,YLOG)
+      implicit none
+      integer*4 NX,ISK
+      real*4 X
+      real*4 XA(NX),YA(ISK,NX)
+      LOGICAL XLOG,YLOG,XLOGL
+      integer*4 I,J
+      real*4 XI,XJ,XV,YI,YJ
+      XLOGL=XLOG
+      DO 3071 J=2,NX
+        IF((X.LT.XA(J)))GO TO 3080
+3071  CONTINUE
+3072  CONTINUE
+      J=NX
+3080  I=J-1
+      IF ((XA(I).LE.0.0)) THEN
+        XLOGL=.FALSE.
+      END IF
+      IF ((.NOT.XLOGL)) THEN
+        XI=XA(I)
+        XJ=XA(J)
+        XV=X
+      ELSE
+        XI=ALOG(XA(I))
+        XJ=ALOG(XA(J))
+        XV=ALOG(X)
+      END IF
+      IF ((YLOG.AND.(YA(1,I).EQ.0.0.OR.YA(1,J).EQ.0.0))) THEN
+        AINTP=0.0
+      ELSE
+        IF ((YLOG)) THEN
+          YI=ALOG(YA(1,I))
+          YJ=ALOG(YA(1,J))
+          IF ((XJ.EQ.XI)) THEN
+            AINTP=YI
+          ELSE
+            AINTP=(YI*(XJ-XV)+YJ*(XV-XI))/(XJ-XI)
+          END IF
+          AINTP=EXP(AINTP)
+        ELSE
+          YI=YA(1,I)
+          YJ=YA(1,J)
+          IF ((XJ.EQ.XI)) THEN
+            AINTP=YI
+          ELSE
+            AINTP=(YI*(XJ-XV)+YJ*(XV-XI))/(XJ-XI)
+          END IF
+        END IF
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION ALIN(X)
+      implicit none
+      real*4 x
+      ALIN=X
+      RETURN
+      END
+      real*4 FUNCTION ALINI(X)
+      implicit none
+      real*4 x
+      ALINI=X
+      RETURN
+      END
+      real*4 FUNCTION ALKE(E)
+      implicit none
+      real*4 E
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ALKE=ALOG(E-RM)
+      RETURN
+      END
+      real*4 FUNCTION ALKEI(X)
+      implicit none
+      real*4 x
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ALKEI=EXP(X) + RM
+      RETURN
+      END
+      real*4 FUNCTION AMOLDM(EN0,EN)
+      implicit none
+      real*4 EN0,EN
+      real*4 TM,EM,BETASQ,AMOLFM
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LAMOLM/C1,C2,CMOLL,T0
+      real*4 C1,C2,CMOLL,T0
+      T0=EN0-RM
+      TM=T0/RM
+      EM=TM+1.
+      C1=(TM/EM)**2
+      C2=(2.*TM+1.)/EM**2
+      BETASQ=1.-1./EM**2
+      CMOLL=RLC*EDEN*2.*PI*R0**2/(BETASQ*T0*TM)
+      AMOLDM=AMOLFM(EN)
+      RETURN
+      END
+      real*4 FUNCTION AMOLFM(EN)
+      implicit none
+      real*4 EN
+      real*4 T,EPS,EPSP,EPSI,EPSPI
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/LAMOLM/C1,C2,CMOLL,T0
+      real*4 C1,C2,CMOLL,T0
+      T=EN-RM
+      EPS=T/T0
+      EPSP=1.-EPS
+      EPSI=1./EPS
+      EPSPI=1./EPSP
+      AMOLFM=CMOLL*(C1+EPSI*(EPSI-C2)+EPSPI*(EPSPI-C2) )
+      RETURN
+      END
+      real*4 FUNCTION AMOLRM(EN0,EN1,EN2)
+      implicit none
+      real*4 EN0,EN1,EN2
+      real*4 T0,T1,T2,TM,EM,C1,C2,BETASQ,CMOLL2,EPS1,EPSP1,EPS2,EPSP2
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      T0=EN0-RM
+      T1=EN1-RM
+      T2=EN2-RM
+      TM=T0/RM
+      EM=TM+1.
+      C1=(TM/EM)**2
+      C2=(2.*TM+1.)/EM**2
+      BETASQ=1.-1./EM**2
+      CMOLL2=RLC*EDEN*2.*PI*R0**2/(BETASQ*TM)
+      EPS1=T1/T0
+      EPSP1=1.-EPS1
+      EPS2=T2/T0
+      EPSP2=1.-EPS2
+      AMOLRM=CMOLL2*(C1*(EPS2-EPS1)+1./EPS1-1./EPS2+1./EPSP2-1./EPSP1 -C
+     *2*ALOG(EPS2*EPSP1/(EPS1*EPSP2)))
+      RETURN
+      END
+      real*4 FUNCTION AMOLTM(E0)
+      implicit none
+      real*4 E0
+      real*4 T0,AMOLRM
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((E0.LE.THMOLL)) THEN
+        AMOLTM=0.
+      ELSE
+        T0=E0-RM
+        AMOLTM=AMOLRM(E0,AE,T0*0.5+RM)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION ANIHDM(E0,K)
+      implicit none
+      real*4 E0,K
+      real*4 GAM,T0P,ANIHFM
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LANIHM/A,C1,C2
+      real*4 A,C1,C2
+      GAM=E0/RM
+      A=GAM+1.
+      T0P=GAM-1.
+      C1=RLC*EDEN*PI*R0**2/(A*T0P*RM)
+      C2=A+2.0*GAM/A
+      ANIHDM=ANIHFM(K)
+      RETURN
+      END
+      real*4 FUNCTION ANIHFM(K)
+      implicit none
+      real*4 K
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/LANIHM/A,C1,C2
+      real*4 A,C1,C2
+      real*4 KP,S1,X
+      S1(X)=C1*(-1.+(C2-1.0/X)/X)
+      KP=K/RM
+      ANIHFM=S1(KP)+S1(A-KP)
+      RETURN
+      END
+      real*4 FUNCTION ANIHRM(E0,K1,K2)
+      implicit none
+      real*4 E0,K1,K2
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      real*4 KP1,KP2,S2,X,C1,C2,GAM,A,T0P
+      S2(X)=RM*C1*(-X+C2*ALOG(X)+1.0/X)
+      GAM=E0/RM
+      KP1=K1/RM
+      KP2=K2/RM
+      A=GAM+1.
+      T0P=GAM-1.
+      C1=RLC*EDEN*PI*R0**2/(A*T0P*RM)
+      C2=A+2.*GAM/A
+      ANIHRM=S2(KP2)-S2(KP1)+S2(A-KP1)-S2(A-KP2)
+      RETURN
+      END
+      real*4 FUNCTION ANIHTM(E0)
+      implicit none
+      real*4 E0
+      real*4 GAM,P0P2,P0P,CANIH
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      GAM=E0/RM
+      P0P2=GAM*GAM-1.0
+      P0P=SQRT(P0P2)
+      CANIH=RLC*EDEN*PI*R0**2/(GAM+1.)
+      ANIHTM=CANIH*((GAM*GAM+4.*GAM+1.)/P0P2*ALOG(GAM+P0P) -(GAM+3.)/P0P
+     *)
+      RETURN
+      END
+      real*4 FUNCTION APRIM(Z,E)
+      implicit none
+      real*4 Z,E
+      integer*4 napre,naprz,ie,iz
+      real*4 EM,AINTP
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      REAL APRIMD(115,14),EPRIM(115),ZPRIM(14),APRIMZ(115)
+      DATA APRIMD/1.32,1.26,1.18,1.13,1.09,1.07,1.05,1.04,1.03, 1.02,8*1
+     *.0, 97*0.0, 1.34,1.27,1.19,1.13,1.09,1.07,1.05,1.04,1.03,1.02, 8*1
+     *.0, 97*0.0, 1.39,1.30,1.21,1.14,1.10,1.07,1.05,1.04,1.03,1.02,0.99
+     *4, 2*0.991,0.990,2*0.989,2*0.988, 97*0.0, 1.46,1.34,1.23,1.15,1.11
+     *,1.08, 1.06,1.05,1.03,1.02,0.989, 0.973,0.971,0.969,0.967,0.965,2*
+     *0.963, 97*0.0, 1.55,1.40,1.26,1.17,1.12,1.09,1.07,1.05,1.03,1.02,0
+     *.955,0.935, 0.930,0.925,0.920,0.915,2*0.911, 97*0.0,  1035*0.0/, E
+     *PRIM/2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,21.,31.,41.,51.,61.,71.,81.,9
+     *1.,  97*0.0/, ZPRIM/6.,13.,29.,50.,79., 9*0.0/
+      save APRIMD,EPRIM,ZPRIM,APRIMZ,napre,naprz
+      IF ((IAPRIM.EQ.0)) THEN
+        IF ((IAPRFL .EQ. 0)) THEN
+          IAPRFL=1
+          WRITE(6,3090)
+3090      FORMAT('0IAPRIM=0, i.e. uses KOCH AND MOTZ empirical correctio
+     *ns to', ' brem cross section'/)
+        END IF
+        IF ((E.GE.50)) THEN
+          APRIM=1.
+        ELSE
+          EM=E/RM
+          DO 3101 IE=1,18
+            APRIMZ(IE)= AINTP(Z,ZPRIM,5,APRIMD(IE,1),115,.FALSE.,.FALSE.
+     *      )
+3101      CONTINUE
+3102      CONTINUE
+          APRIM=AINTP(EM,EPRIM,18,APRIMZ,1,.FALSE.,.FALSE.)
+        END IF
+      ELSE IF((IAPRIM.EQ.1)) THEN
+        IF ((IAPRFL.EQ.0)) THEN
+          WRITE(6,3110)
+3110      FORMAT('0IAPRIM=1, i.e. uses NRC(based on NIST/ICRU)', ' corre
+     *ctions to brem cross section'/)
+          READ(22,*) NAPRZ, NAPRE
+          IF ((NAPRZ.GT.14)) THEN
+            WRITE(6,3120)
+3120        FORMAT(//,' TOO MANY ELEMENTS FOR APRIME INTERPOLATION:', /,
+     *'   CHANGE $NAPRZ AND RECOMPILE PEGS')
+            call exit(24)
+          END IF
+          IF ((NAPRE.GT.115)) THEN
+            WRITE(6,3130)
+3130        FORMAT(//,' TOO MANY ENERGIES FOR APRIME INTERPOLATION:', /,
+     *'   CHANGE $NAPRE AND RECOMPILE PEGS')
+            call exit(24)
+          END IF
+          READ(22,*) (EPRIM(IE),IE=1,NAPRE)
+          DO 3141 IE=1,NAPRE
+            EPRIM(IE)=1.+EPRIM(IE)/RM
+3141      CONTINUE
+3142      CONTINUE
+          DO 3151 IZ=1,NAPRZ
+            READ(22,*)ZPRIM(IZ),(APRIMD(IE,IZ),IE=1,NAPRE)
+3151      CONTINUE
+3152      CONTINUE
+          IAPRFL=1
+        END IF
+        EM=E/RM
+        DO 3161 IE=1,NAPRE
+          APRIMZ(IE)= AINTP(Z,ZPRIM,NAPRZ,APRIMD(IE,1),115,.TRUE.,.FALSE
+     *    .)
+3161    CONTINUE
+3162    CONTINUE
+        APRIM=AINTP(EM,EPRIM,NAPRE,APRIMZ,1,.FALSE.,.FALSE.)
+      ELSE IF((IAPRIM.EQ.2)) THEN
+        IF ((IAPRFL .EQ. 0)) THEN
+          IAPRFL=1
+          WRITE(6,3170)
+3170      FORMAT('0IAPRIM = 2, i.e. uses NO corrections to brem', ' cros
+     *s section'/)
+        END IF
+        APRIM=1.0
+      ELSE
+        WRITE(6,3180)IAPRIM
+3180    FORMAT(//,' ILLEGAL VALUE FOR IAPRIM: ',I4)
+        call exit(24)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION AREC(X)
+      implicit none
+      real*4 x
+      AREC=1.0/X
+      RETURN
+      END
+      real*4 FUNCTION BHABDM(EN0,EN)
+      implicit none
+      real*4 EN0,EN
+      real*4 TM,EM,Y,BHABFM
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LBHABM/B1,B2,B3,B4,CBHAB,BETASI,T0
+      real*4 B1,B2,B3,B4,CBHAB,BETASI,T0
+      T0=EN0-RM
+      TM=T0/RM
+      EM=TM+1.
+      Y=1./(TM+2.)
+      BETASI=1./(1.-1./EM**2)
+      CBHAB=RLC*EDEN*2.*PI*R0**2/(T0*TM)
+      B1=2.-Y**2
+      B2=3.-Y*(6.-Y*(1.-Y*2.))
+      B3=2.-Y*(10.-Y*(16.-Y*8.))
+      B4=1.-Y*(6.-Y*(12.-Y*8.))
+      BHABDM=BHABFM(EN)
+      RETURN
+      END
+      real*4 FUNCTION BHABFM(EN)
+      implicit none
+      real*4 EN
+      real*4 T,EPS,EPSI
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/LBHABM/B1,B2,B3,B4,CBHAB,BETASI,T0
+      real*4 B1,B2,B3,B4,CBHAB,BETASI,T0
+      T=EN-RM
+      EPS=T/T0
+      EPSI=1./EPS
+      BHABFM=CBHAB*(EPSI*(EPSI*BETASI-B1)+B2+EPS*(EPS*B4-B3))
+      RETURN
+      END
+      real*4 FUNCTION BHABRM(EN0,EN1,EN2)
+      implicit none
+      real*4 EN0,EN1,EN2
+      real*4 T0,T1,T2,TM,EM,Y,BETASI,CBHAB2,B1,B2,B3,B4,EPS1,EPS2
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      T0=EN0-RM
+      T1=EN1-RM
+      T2=EN2-RM
+      TM=T0/RM
+      EM=TM+1.
+      Y=1./(TM+2.)
+      BETASI=1./(1.-1./EM**2)
+      CBHAB2=RLC*EDEN*2.*PI*R0**2/TM
+      B1=2.-Y**2
+      B2=3.-Y*(6.-Y*(1.-Y*2.))
+      B3=2.-Y*(10.-Y*(16.-Y*8.))
+      B4=1.-Y*(6.-Y*(12.-Y*8.))
+      EPS1=T1/T0
+      EPS2=T2/T0
+      BHABRM=CBHAB2*(BETASI*(1./EPS1-1./EPS2)-B1*ALOG(EPS2/EPS1) +B2*(EP
+     *S2-EPS1)+EPS2*EPS2*(EPS2*B4/3.-0.5*B3) - EPS1*EPS1*(EPS1*B4/3.-0.5
+     **B3))
+      RETURN
+      END
+      real*4 FUNCTION BHABTM(E0)
+      implicit none
+      real*4 E0,BHABRM
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((E0.LE.AE)) THEN
+        BHABTM=0.
+      ELSE
+        BHABTM=BHABRM(E0,AE,E0)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION BREMDR(EA,K)
+      implicit none
+      real*4 EA,K
+      integer*4 LS
+      real*4 BREMFR
+      COMMON/LBREMR/E,LA,LB,LD
+      real*4 E
+      integer*4 LA,LB,LD
+      E=EA
+      IF ((E.GE.50.)) THEN
+        LD=2
+        LS=3
+      ELSE
+        LD=1
+        LS=0
+      END IF
+      LA=LS+1
+      LB=LS+2
+      BREMDR=BREMFR(K)
+      RETURN
+      END
+      real*4 FUNCTION BREMDZ(Z,E,K)
+      implicit none
+      real*4 Z,E,K,BRMSDZ
+      BREMDZ=BRMSDZ(Z,E,K)/K
+      RETURN
+      END
+      real*4 FUNCTION BREMFR(K)
+      implicit none
+      real*4 K
+      real*4 EPS,DEL,DELTA,A,B
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/DBRPR/ALFP1(2),ALFP2(2),AL2
+      real*4 ALFP1,ALFP2,al2
+      COMMON/LBREMR/E,LA,LB,LD
+      real*4 E
+      integer*4 LA,LB,LD
+      EPS=K/E
+      DEL=EPS/(E*(1-EPS))
+      IF ((DEL.GT.DELPOS(LD))) THEN
+        BREMFR=0.0
+        RETURN
+      END IF
+      DELTA=DELCM*DEL
+      IF ((DELTA.LE.1.)) THEN
+        A=DL1(LA)+DELTA*(DL2(LA)+DELTA*DL3(LA))
+        B =DL1(LB)+DELTA*(DL2(LB)+DELTA*DL3(LB))
+      ELSE
+        A=DL4(LA)+DL5(LA)*ALOG(DELTA+DL6(LA))
+        B =DL4(LB)+DL5(LB)*ALOG(DELTA+DL6(LB))
+      END IF
+      BREMFR=(ALPHI(LD)*(1.-EPS)/EPS/AL2*A+0.5*(2.*EPS)*B)/E
+      RETURN
+      END
+      real*4 FUNCTION BREMFZ(K)
+      implicit none
+      real*4 K,BRMSFZ
+      BREMFZ=BRMSFZ(K)/K
+      RETURN
+      END
+      real*4 FUNCTION BREMRR(E,K1,K2)
+      implicit none
+      real*4 E,K1,K2
+      EXTERNAL BREMFR
+      real*4 DUMMY,QD,BREMDR
+      DUMMY=BREMDR(E,K1)
+      BREMRR=QD(BREMFR,K1,K2,'BREMFR')
+      RETURN
+      END
+      real*4 FUNCTION BREMRM(E,K1,K2)
+      implicit none
+      real*4 E,K1,K2
+      integer*4 I
+      real*4 BREMRZ
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      BREMRM=0.
+      DO 3191 I=1,NE
+        BREMRM=BREMRM+PZ(I)*BREMRZ(Z(I),E,K1,K2)
+3191  CONTINUE
+3192  CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION BREMRZ(Z,E,K1,K2)
+      implicit none
+      real*4 Z,E,K1,K2
+      EXTERNAL BREMFZ
+      real*4 DUMMY,BREMDZ,QD
+      DUMMY=BREMDZ(Z,E,K1)
+      BREMRZ=QD(BREMFZ,K1,K2,'BREMFZ')
+      RETURN
+      END
+      real*4 FUNCTION BREMTM(E0)
+      implicit none
+      real*4 E0,BREMRM
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((E0.LE.AP+RM)) THEN
+        BREMTM=0.
+      ELSE
+        BREMTM=BREMRM(E0,AP,E0-RM)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION BREMTR(E0)
+      implicit none
+      real*4 E0,BREMRR
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((E0.LE.AP+RM)) THEN
+        BREMTR=0.
+      ELSE
+        BREMTR=BREMRR(E0,AP,E0-RM)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION BRMSDZ(Z,EA,K)
+      implicit none
+      real*4 Z,EA,K
+      real*4 APRIM,XSIF,FCOULC,BRMSFZ
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LBREMZ/CONST,DELC,E,DELTAM,XLNZ
+      real*4 CONST,DELC,E,DELTAM,XLNZ
+      E=EA
+      DELC=136.*Z**(-1./3.)*RM/E
+      CONST=APRIM(Z,E)*(AN*RHO/WM)*R0**2*FSC*Z*(Z+XSIF(Z))*RLC
+      XLNZ=4./3.*ALOG(Z)
+      IF((E.GE.50))XLNZ=XLNZ+4.*FCOULC(Z)
+      DELTAM=EXP((21.12-XLNZ)/4.184)-0.952
+      BRMSDZ=BRMSFZ(K)
+      RETURN
+      END
+      real*4 FUNCTION BRMSFZ(K)
+      implicit none
+      real*4 K
+      real*4 EMKLOC,DELTA,SB1,SB2,EE
+      COMMON/LBREMZ/CONST,DELC,E,DELTAM,XLNZ
+      real*4 CONST,DELC,E,DELTAM,XLNZ
+      EMKLOC=E-K
+      IF ((EMKLOC.EQ.0.0)) THEN
+        EMKLOC=1.E-25
+      END IF
+      DELTA=DELC*K/EMKLOC
+      IF ((DELTA.GE.DELTAM)) THEN
+        BRMSFZ=0.0
+      ELSE
+        IF ((DELTA.LE.1.)) THEN
+          SB1=20.867+DELTA*(-3.242+DELTA*0.625)-XLNZ
+          SB2=20.209+DELTA*(-1.930+DELTA*(-0.086))-XLNZ
+        ELSE
+          SB1=21.12-4.184*ALOG(DELTA+0.952)-XLNZ
+          SB2=SB1
+        END IF
+        EE=EMKLOC/E
+        BRMSFZ=CONST*((1.+EE*EE)*SB1-0.666667*EE*SB2)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION BRMSRM(E,K1,K2)
+      implicit none
+      real*4 E,K1,K2,BRMSRZ
+      integer*4 I
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      BRMSRM=0.
+      DO 3201 I=1,NE
+        BRMSRM=BRMSRM+PZ(I)*BRMSRZ(Z(I),E,K1,K2)
+3201  CONTINUE
+3202  CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION BRMSRZ(Z,E,K1,K2)
+      implicit none
+      real*4 Z,E,K1,K2
+      EXTERNAL BRMSFZ
+      real*4 DUMMY,BRMSDZ,QD
+      DUMMY=BRMSDZ(Z,E,K1)
+      BRMSRZ=QD(BRMSFZ,K1,K2,'BRMSFZ')
+      RETURN
+      END
+      real*4 FUNCTION BRMSTM(E0,EG)
+      implicit none
+      real*4 E0,EG,BRMSRM,AU,zero
+      parameter (zero=0)
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((E0.LE.RM)) THEN
+        BRMSTM=0.
+      ELSE
+        AU=AMIN1(EG,E0-RM)
+        BRMSTM=BRMSRM(E0,zero,AU)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION COHETM(K)
+      implicit none
+      real*4 K,COHETZ
+      integer*4 I
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COHETM=0.0
+      DO 3211 I=1,NE
+        COHETM=COHETM+PZ(I)*COHETZ(Z(I),K)
+3211  CONTINUE
+3212  CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION COHETZ(Z,K)
+      implicit none
+      real*4 Z,K
+      integer*4 IZ
+      real*4 PCON,AINTP
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/RAYLEI/AFAC(100,100),AFAC2(100),AFFI(100),XVAL(100), COHE(6
+     *1,100),IRAYL
+      real*4 AFAC,AFAC2,AFFI,XVAL,COHE
+      integer*4 IRAYL
+      PCON= 1.E-24*(AN*RHO/WM)*RLC
+      IZ=Z
+      COHETZ=PCON*AINTP(K,PHE(1,IZ),NPHE(IZ),COHE(1,IZ),1,.TRUE.,.TRUE.)
+      RETURN
+      END
+      real*4 FUNCTION COMPDM(K0A,K)
+      implicit none
+      real*4 K0A,K,K0P,COMPFM
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LCOMPM/K0,CCOMP,C1,C2,C3
+      real*4 K0,CCOMP,C1,C2,C3
+      K0=K0A
+      K0P=K0/RM
+      CCOMP=RLC*EDEN*PI*R0**2/(K0*K0P)
+      C1=1./K0P**2
+      C2=1.-(2.+2.*K0P)/K0P**2
+      C3=(1.+2.*K0P)/K0P**2
+      COMPDM=COMPFM(K)
+      RETURN
+      END
+      real*4 FUNCTION COMPFM(K)
+      implicit none
+      real*4 K,EPS,EPSI
+      COMMON/LCOMPM/K0,CCOMP,C1,C2,C3
+      real*4 K0,CCOMP,C1,C2,C3
+      EPS=K/K0
+      EPSI=1./EPS
+      COMPFM=CCOMP*( (C1*EPSI+C2)*EPSI+C3+EPS )
+      RETURN
+      END
+      real*4 FUNCTION COMPRM(K0,K1,K2)
+      implicit none
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      real*4 K0,K1,K2,CCOMP2
+      REAL*8 C1,C2,C3,EPS1,EPS2,K0P
+      K0P=K0/RM
+      CCOMP2=RLC*EDEN*PI*R0**2/K0P
+      C1=1./K0P**2
+      C2=1.-(2.+2.*K0P)/K0P**2
+      C3=(1.+2.*K0P)/K0P**2
+      EPS1=K1/K0
+      EPS2=K2/K0
+      COMPRM=CCOMP2*(C1*(1./EPS1-1./EPS2)+C2*DLOG(EPS2/EPS1)+EPS2* (C3+0
+     *.5*EPS2) - EPS1*(C3+0.5*EPS1) )
+      RETURN
+      END
+      real*4 FUNCTION COMPTM(K0)
+      implicit none
+      real*4 K0,K1,COMPRM
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      K1=K0*RM/(RM+2.*K0)
+      COMPTM=COMPRM(K0,K1,K0)
+      RETURN
+      END
+      real*4 FUNCTION CRATIO(E)
+      implicit none
+      real*4 E,PAIRTU,COMPTM,PHOTTE,TOT,COHETM
+      TOT=PAIRTU(E)+COMPTM(E)+PHOTTE(E)
+      CRATIO=TOT/(TOT+COHETM(E))
+      RETURN
+      END
+      REAL FUNCTION DCADRE(F,A,B,AERR,RERR,ERROR,IER)
+      implicit none
+      EXTERNAL F
+      DIMENSION T(10,10),R(10),AIT(10),DIF(10),RN(4),TS(2049)
+      DIMENSION IBEGS(30),BEGIN(30),FINIS(30),EST(30)
+      DIMENSION REGLSV(30)
+      LOGICAL H2CONV,AITKEN,RIGHT,REGLAR,REGLSV
+      REAL T,R,AIT,DIF,RN,TS,BEGIN,FINIS,EST,AITLOW
+      REAL H2TOL,AITTOL,LENGTH,JUMPTL,ZERO,P1,HALF,ONE
+      REAL TWO,FOUR,FOURP5,TEN,HUN,CADRE,ERROR,A,B
+      REAL AERR,RERR,STEPMN,STEPNM,STAGE,CUREST,FNSIZE
+      REAL PREVER,BEG,FBEG,END,FEND,STEP,ASTEP,TABS,HOVN
+      REAL FN,SUM,SUMABS,ABSI,VINT,TABTLM,ERGL,ERGOAL
+      REAL ERRA,ERRR,FEXTRP,ERRER,DIFF,SING,FEXTM1,ALG4O2
+      REAL H2NXT,SINGNX,SLOPE,FBEG2,ALPHA
+      REAL ERRET,H2TFEX,FI
+      REAL RVAL,F
+      integer*4 IBEGS,IER,ISTAGE,IBEG,IEND,L,N,LM1,N2,ISTEP,II,III,I,IST
+     *EP2,IT,NNLEFT
+      integer*4 MAXTS,MAXTBL,MXSTGE
+      DATA AITLOW,H2TOL,AITTOL,JUMPTL,MAXTS,MAXTBL,MXSTGE/1.1E0,.15E0, .
+     *1E0,.01E0,2049,10,30/
+      DATA RN(1),RN(2),RN(3),RN(4)/.7142005E0,.3466282E0,.843751E0, .126
+     *3305E0/
+      DATA ZERO,P1,HALF,ONE,TWO,FOUR,FOURP5,TEN,HUN/0.0E0,0.1E0,0.5E0, 1
+     *.0E0,2.0E0,4.0E0,4.5E0,10.0E0,100.0E0/
+      save MAXTS,MAXTBL,MXSTGE
+      ALG4O2=ALOG10(TWO)
+      CADRE=ZERO
+      ERROR=ZERO
+      CUREST=ZERO
+      VINT=ZERO
+      IER=0
+      LENGTH=ABS(B-A)
+      IF((LENGTH.EQ.ZERO))GO TO 215
+      IF((RERR.GT.P1.OR.RERR.LT.ZERO))GO TO 210
+      IF((AERR.EQ.ZERO.AND.(RERR+HUN).LE.HUN))GO TO 210
+      ERRR=RERR
+      ERRA=ABS(AERR)
+      STEPMN=(LENGTH/FLOAT(2**MXSTGE))
+      STEPNM=AMAX1(LENGTH,ABS(A),ABS(B))*TEN
+      STAGE=HALF
+      ISTAGE=1
+      FNSIZE=ZERO
+      PREVER=ZERO
+      REGLAR=.FALSE.
+      BEG=A
+      RVAL=BEG
+      FBEG=F(RVAL)*HALF
+      TS(1)=FBEG
+      IBEG=1
+      END=B
+      RVAL=END
+      FEND=F(RVAL)*HALF
+      TS(2)=FEND
+      IEND=2
+5     RIGHT=.FALSE.
+10    STEP=END - BEG
+      ASTEP=ABS(STEP)
+      IF((ASTEP.LT.STEPMN))GO TO 205
+      IF((STEPNM+ASTEP.EQ.STEPNM))GO TO 205
+      T(1,1)=FBEG + FEND
+      TABS=ABS(FBEG) + ABS(FEND)
+      L=1
+      N=1
+      H2CONV=.FALSE.
+      AITKEN=.FALSE.
+15    LM1=L
+      L=L + 1
+      N2=N + N
+      FN=N2
+      ISTEP=(IEND - IBEG)/N
+      IF((ISTEP.GT.1))GO TO 25
+      II=IEND
+      IEND=IEND + N
+      IF((IEND.GT.MAXTS))GO TO 200
+      HOVN=STEP/FN
+      III=IEND
+      FI=ONE
+      DO 10011 I=1,N2,2
+        TS(III)=TS(II)
+        RVAL=END-FI*HOVN
+        TS(III-1)=F(RVAL)
+        FI=FI+TWO
+        III=III-2
+        II=II-1
+10011 CONTINUE
+10012 CONTINUE
+      ISTEP=2
+25    ISTEP2=IBEG + ISTEP/2
+      SUM=ZERO
+      SUMABS=ZERO
+      DO 10021 I=ISTEP2,IEND,ISTEP
+        SUM=SUM + TS(I)
+        SUMABS=SUMABS + ABS(TS(I))
+10021 CONTINUE
+10022 CONTINUE
+      T(L,1)=T(L-1,1)*HALF+SUM/FN
+      TABS=TABS*HALF+SUMABS/FN
+      ABSI=ASTEP*TABS
+      N=N2
+      IT=1
+      VINT=STEP*T(L,1)
+      TABTLM=TABS*TEN
+      FNSIZE=AMAX1(FNSIZE,ABS(T(L,1)))
+      ERGL=ASTEP*FNSIZE*TEN
+      ERGOAL=STAGE*AMAX1(ERRA,ERRR*ABS(CUREST+VINT))
+      FEXTRP=ONE
+      DO 10031 I=1,LM1
+        FEXTRP=FEXTRP*FOUR
+        T(I,L)=T(L,I) - T(L-1,I)
+        T(L,I+1)=T(L,I) + T(I,L)/(FEXTRP-ONE)
+10031 CONTINUE
+10032 CONTINUE
+      ERRER=ASTEP*ABS(T(1,L))
+      IF((L.GT.2))GO TO 40
+      IF((TABS+P1*ABS(T(1,2)).EQ.TABS))GO TO 135
+      GO TO 15
+40    DO 45 I=2,LM1
+      DIFF=ZERO
+      IF((TABTLM+ABS(T(I-1,L)).NE.TABTLM))DIFF=T(I-1,LM1)/T(I-1,L)
+      T(I-1,LM1)=DIFF
+45    CONTINUE
+      IF((ABS(FOUR-T(1,LM1)).LE.H2TOL))GO TO 60
+      IF((T(1,LM1).EQ.ZERO))GO TO 55
+      IF((ABS(TWO-ABS(T(1,LM1))).LT.JUMPTL))GO TO 130
+      IF((L.EQ.3))GO TO 15
+      H2CONV=.FALSE.
+      IF((ABS((T(1,LM1)-T(1,L-2))/T(1,LM1)).LE.AITTOL))GO TO 75
+50    IF(REGLAR) GO TO 55
+      IF((L.EQ.4))GO TO 15
+55    IF(ERRER.GT.ERGOAL.AND.(ERGL+ERRER).NE.ERGL) GO TO 175
+      GO TO 145
+60    IF(H2CONV) GO TO 65
+      AITKEN=.FALSE.
+      H2CONV=.TRUE.
+65    FEXTRP=FOUR
+70    IT=IT + 1
+      VINT=STEP*T(L,IT)
+      ERRER=ABS(STEP/(FEXTRP-ONE)*T(IT-1,L))
+      IF((ERRER.LE.ERGOAL))GO TO 160
+      IF((ERGL+ERRER.EQ.ERGL))GO TO 160
+      IF((IT.EQ.LM1))GO TO 125
+      IF((T(IT,LM1).EQ.ZERO))GO TO 70
+      IF((T(IT,LM1).LE.FEXTRP))GO TO 125
+      IF((ABS(T(IT,LM1)/FOUR-FEXTRP)/FEXTRP.LT.AITTOL))FEXTRP=FEXTRP*FOU
+     *R
+      GO TO 70
+75    IF(T(1,LM1).LT.AITLOW) GO TO 175
+      IF((AITKEN))GO TO 80
+      H2CONV=.FALSE.
+      AITKEN=.TRUE.
+80    FEXTRP=T(L-2,LM1)
+      IF((FEXTRP.GT.FOURP5))GO TO 65
+      IF((FEXTRP.LT.AITLOW))GO TO 175
+      IF((ABS(FEXTRP-T(L-3,LM1))/T(1,LM1).GT.H2TOL))GO TO 175
+      SING=FEXTRP
+      FEXTM1=ONE/(FEXTRP - ONE)
+      AIT(1)=ZERO
+      DO 85 I=2,L
+      AIT(I)=T(I,1) + (T(I,1)-T(I-1,1))*FEXTM1
+      R(I)=T(1,I-1)
+      DIF(I)=AIT(I) - AIT(I-1)
+85    CONTINUE
+      IT=2
+90    VINT=STEP*AIT(L)
+      ERRER=ERRER*FEXTM1
+      IF((ERRER.GT.ERGOAL.AND.(ERGL+ERRER).NE.ERGL))GO TO 95
+      ALPHA=ALOG10(SING)/ALG4O2 - ONE
+      IER=MAX0(IER,65)
+      GO TO 160
+95    IT=IT + 1
+      IF((IT.EQ.LM1))GO TO 125
+      IF((IT.GT.3))GO TO 100
+      H2NXT=FOUR
+      SINGNX=SING+SING
+100   IF(H2NXT.LT.SINGNX) GO TO 105
+      FEXTRP=SINGNX
+      SINGNX=SINGNX+SINGNX
+      GO TO 110
+105   FEXTRP=H2NXT
+      H2NXT=FOUR*H2NXT
+110   DO 115 I=IT,LM1
+      R(I+1)=ZERO
+      IF((TABTLM+ABS(DIF(I+1)).NE.TABTLM))R(I+1)=DIF(I)/DIF(I+1)
+115   CONTINUE
+      H2TFEX=-H2TOL*FEXTRP
+      IF((R(L)-FEXTRP.LT.H2TFEX))GO TO 125
+      IF((R(L-1)-FEXTRP.LT.H2TFEX))GO TO 125
+      ERRER=ASTEP*ABS(DIF(L))
+      FEXTM1=ONE/(FEXTRP - ONE)
+      DO 120 I=IT,L
+      AIT(I)=AIT(I) + DIF(I)*FEXTM1
+      DIF(I)=AIT(I) - AIT(I-1)
+120   CONTINUE
+      GO TO 90
+125   FEXTRP=AMAX1(PREVER/ERRER,AITLOW)
+      PREVER=ERRER
+      IF((L.LT.5))GO TO 15
+      IF((L-IT.GT.2.AND.ISTAGE.LT.MXSTGE))GO TO 170
+      ERRET=ERRER/(FEXTRP**(MAXTBL-L))
+      IF((ERRET.GT.ERGOAL.AND.(ERGL+ERRET).NE.ERGL))GO TO 170
+      GO TO 15
+130   IF(ERRER.GT.ERGOAL.AND.(ERGL+ERRER).NE.ERGL) GO TO 170
+      DIFF=ABS(T(1,L))*(FN+FN)
+      GO TO 160
+135   SLOPE=(FEND-FBEG)*TWO
+      FBEG2=FBEG+FBEG
+      DO 140 I=1,4
+      RVAL=BEG+RN(I)*STEP
+      DIFF=ABS(F(RVAL) - FBEG2-RN(I)*SLOPE)
+      IF((TABTLM+DIFF.NE.TABTLM))GO TO 155
+140   CONTINUE
+      GO TO 160
+145   SLOPE=(FEND-FBEG)*TWO
+      FBEG2=FBEG+FBEG
+      I=1
+150   RVAL=BEG+RN(I)*STEP
+      DIFF=ABS(F(RVAL) - FBEG2-RN(I)*SLOPE)
+155   ERRER=AMAX1(ERRER,ASTEP*DIFF)
+      IF((ERRER.GT.ERGOAL.AND.(ERGL+ERRER).NE.ERGL))GO TO 175
+      I=I+1
+      IF((I.LE.4))GO TO 150
+      IER=66
+160   CADRE=CADRE + VINT
+      ERROR=ERROR + ERRER
+      IF((RIGHT))GO TO 165
+      ISTAGE=ISTAGE - 1
+      IF((ISTAGE.EQ.0))GO TO 220
+      REGLAR=REGLSV(ISTAGE)
+      BEG=BEGIN(ISTAGE)
+      END=FINIS(ISTAGE)
+      CUREST=CUREST - EST(ISTAGE+1) + VINT
+      IEND=IBEG - 1
+      FEND=TS(IEND)
+      IBEG=IBEGS(ISTAGE)
+      GO TO 180
+165   CUREST=CUREST + VINT
+      STAGE=STAGE+STAGE
+      IEND=IBEG
+      IBEG=IBEGS(ISTAGE)
+      END=BEG
+      BEG=BEGIN(ISTAGE)
+      FEND=FBEG
+      FBEG=TS(IBEG)
+      GO TO 5
+170   REGLAR=.TRUE.
+175   IF(ISTAGE.EQ.MXSTGE) GO TO 205
+      IF((RIGHT))GO TO 185
+      REGLSV(ISTAGE+1)=REGLAR
+      BEGIN(ISTAGE)=BEG
+      IBEGS(ISTAGE)=IBEG
+      STAGE=STAGE*HALF
+180   RIGHT=.TRUE.
+      BEG=(BEG+END)*HALF
+      IBEG=(IBEG+IEND)/2
+      TS(IBEG)=TS(IBEG)*HALF
+      FBEG=TS(IBEG)
+      GO TO 10
+185   NNLEFT=IBEG - IBEGS(ISTAGE)
+      IF((IEND+NNLEFT.GE.MAXTS))GO TO 200
+      III=IBEGS(ISTAGE)
+      II=IEND
+      DO 190 I=III,IBEG
+      II=II + 1
+      TS(II)=TS(I)
+190   CONTINUE
+      DO 195 I=IBEG,II
+      TS(III)=TS(I)
+      III=III + 1
+195   CONTINUE
+      IEND=IEND + 1
+      IBEG=IEND - NNLEFT
+      FEND=FBEG
+      FBEG=TS(IBEG)
+      FINIS(ISTAGE)=END
+      END=BEG
+      BEG=BEGIN(ISTAGE)
+      BEGIN(ISTAGE)=END
+      REGLSV(ISTAGE)=REGLAR
+      ISTAGE=ISTAGE + 1
+      REGLAR=REGLSV(ISTAGE)
+      EST(ISTAGE)=VINT
+      CUREST=CUREST + EST(ISTAGE)
+      GO TO 5
+200   IER=131
+      GO TO 215
+205   IER=132
+      GO TO 215
+210   IER=133
+215   CADRE=CUREST + VINT
+220   DCADRE=CADRE
+9000  CONTINUE
+9005  RETURN
+      END
+      real*4 FUNCTION EBIND(E)
+      implicit none
+      real*4 E
+      integer*4 I,J
+      real*4 PHOTTZ,STOT,PHOTTE
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      EBIND=0.0
+      DO 10041 I=1,NE
+        J=Z(I)
+        EBIND=EBIND+PZ(I)*PHOTTZ(Z(I),E)*EKEDGE(J)*0.001
+10041 CONTINUE
+10042 CONTINUE
+      STOT=PHOTTE(E)
+      IF((STOT.NE.0.0))EBIND=EBIND/STOT
+      RETURN
+      END
+      real*4 FUNCTION EBR1(E)
+      implicit none
+      real*4 E,BREMTM,BREM,TEBR,AMOLTM
+      BREM=BREMTM(E)
+      TEBR=BREM+AMOLTM(E)
+      IF ((TEBR.GT.0.0)) THEN
+        EBR1=BREM/TEBR
+      ELSE
+        EBR1=0.0
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION EDEDX(E)
+      implicit none
+      real*4 E,SPTOTE
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      EDEDX=SPTOTE(E,AE,AP)
+      RETURN
+      END
+      real*4 FUNCTION ESIG(E)
+      implicit none
+      real*4 E,BREMTM,AMOLTM
+      ESIG=BREMTM(E)+AMOLTM(E)
+      RETURN
+      END
+      real*4 FUNCTION FCOULC(Z)
+      implicit none
+      real*4 Z,ASQ
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ASQ=(FSC*Z)**2
+      FCOULC = ASQ*(1.0/(1.0+ASQ)+0.20206+ASQ*(-0.0369+ ASQ*(0.0083+ASQ*
+     *(-0.002))))
+      RETURN
+      END
+      real*4 FUNCTION FI(I,X1,X2,X3,X4)
+      GO TO(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,
+     *24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,
+     *46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,
+     *68,69,70,71,72,73,74,75,76,77,78),I
+1     FI=ALIN(X1)
+      RETURN
+2     FI=ALINI(X1)
+      RETURN
+3     FI=ADFMOL(X1)
+      RETURN
+4     FI=ADIMOL(X1)
+      RETURN
+5     FI=ADDMOL(X1)
+      RETURN
+6     FI=ALOG(X1)
+      RETURN
+7     FI=EXP(X1)
+      RETURN
+8     FI=AREC(X1)
+      RETURN
+9     FI=ALKE(X1)
+      RETURN
+10    FI=ALKEI(X1)
+      RETURN
+11    FI=AMOLDM(X1,X2)
+      RETURN
+12    FI=AMOLFM(X1)
+      RETURN
+13    FI=AMOLRM(X1,X2,X3)
+      RETURN
+14    FI=AMOLTM(X1)
+      RETURN
+15    FI=ANIHDM(X1,X2)
+      RETURN
+16    FI=ANIHFM(X1)
+      RETURN
+17    FI=ANIHRM(X1,X2,X3)
+      RETURN
+18    FI=ANIHTM(X1)
+      RETURN
+19    FI=APRIM(X1,X2)
+      RETURN
+20    FI=BHABDM(X1,X2)
+      RETURN
+21    FI=BHABFM(X1)
+      RETURN
+22    FI=BHABRM(X1,X2,X3)
+      RETURN
+23    FI=BHABTM(X1)
+      RETURN
+24    FI=BREMDR(X1,X2)
+      RETURN
+25    FI=BREMFR(X1)
+      RETURN
+26    FI=BREMDZ(X1,X2,X3)
+      RETURN
+27    FI=BRMSDZ(X1,X2,X3)
+      RETURN
+28    FI=BREMFZ(X1)
+      RETURN
+29    FI=BRMSFZ(X1)
+      RETURN
+30    FI=BREMRR(X1,X2,X3)
+      RETURN
+31    FI=BREMRM(X1,X2,X3)
+      RETURN
+32    FI=BREMRZ(X1,X2,X3,X4)
+      RETURN
+33    FI=BREMTM(X1)
+      RETURN
+34    FI=BREMTR(X1)
+      RETURN
+35    FI=BRMSRM(X1,X2,X3)
+      RETURN
+36    FI=BRMSRZ(X1,X2,X3,X4)
+      RETURN
+37    FI=BRMSTM(X1,X2)
+      RETURN
+38    FI=COHETM(X1)
+      RETURN
+39    FI=COHETZ(X1,X2)
+      RETURN
+40    FI=COMPDM(X1,X2)
+      RETURN
+41    FI=COMPFM(X1)
+      RETURN
+42    FI=COMPRM(X1,X2,X3)
+      RETURN
+43    FI=COMPTM(X1)
+      RETURN
+44    FI=CRATIO(X1)
+      RETURN
+45    FI=EBIND(X1)
+      RETURN
+46    FI=EBR1(X1)
+      RETURN
+47    FI=EDEDX(X1)
+      RETURN
+48    FI=ESIG(X1)
+      RETURN
+49    FI=FCOULC(X1)
+      RETURN
+50    FI=GBR1(X1)
+      RETURN
+51    FI=GBR2(X1)
+      RETURN
+52    FI=GMFP(X1)
+      RETURN
+53    FI=PAIRDR(X1,X2)
+      RETURN
+54    FI=PAIRFR(X1)
+      RETURN
+55    FI=PAIRDZ(X1,X2,X3)
+      RETURN
+56    FI=PAIRFZ(X1)
+      RETURN
+57    FI=PAIRRM(X1,X2,X3)
+      RETURN
+58    FI=PAIRRR(X1,X2,X3)
+      RETURN
+59    FI=PAIRRZ(X1,X2,X3,X4)
+      RETURN
+60    FI=PAIRTE(X1)
+      RETURN
+61    FI=PAIRTM(X1)
+      RETURN
+62    FI=PAIRTR(X1)
+      RETURN
+63    FI=PAIRTU(X1)
+      RETURN
+64    FI=PAIRTZ(X1,X2)
+      RETURN
+65    FI=PBR1(X1)
+      RETURN
+66    FI=PBR2(X1)
+      RETURN
+67    FI=PDEDX(X1)
+      RETURN
+68    FI=PHOTTZ(X1,X2)
+      RETURN
+69    FI=PHOTTE(X1)
+      RETURN
+70    FI=PSIG(X1)
+      RETURN
+71    FI=SPIONE(X1,X2)
+      RETURN
+72    FI=SPIONP(X1,X2)
+      RETURN
+73    FI=SPTOTE(X1,X2,X3)
+      RETURN
+74    FI=SPTOTP(X1,X2,X3)
+      RETURN
+75    FI=TMXB(X1)
+      RETURN
+76    FI=TMXS(X1)
+      RETURN
+77    FI=TMXDE2(X1)
+      RETURN
+78    FI=XSIF(X1)
+      RETURN
+      END
+      real*4 FUNCTION GBR1(E)
+      implicit none
+      real*4 E,PAIR,PAIRTU,COMPTM,PHOTTE
+      PAIR=PAIRTU(E)
+      GBR1=PAIR/(PAIR+COMPTM(E)+PHOTTE(E))
+      RETURN
+      END
+      real*4 FUNCTION GBR2(E)
+      implicit none
+      real*4 E,PRCO,PAIRTU,COMPTM,PHOTTE
+      PRCO=PAIRTU(E)+COMPTM(E)
+      GBR2=PRCO/(PRCO+PHOTTE(E))
+      RETURN
+      END
+      real*4 FUNCTION GMFP(E)
+      implicit none
+      real*4 E,PAIRTU,COMPTM,PHOTTE
+      GMFP=1.0/(PAIRTU(E)+COMPTM(E)+PHOTTE(E))
+      RETURN
+      END
+      integer*4 FUNCTION IFUNT(NAME)
+      implicit none
+      integer*4 I,J
+      CHARACTER*4 NAME(6)
+      COMMON/FUNCS/NFARG(78),NFUNS
+      integer*4 NFARG,NFUNS
+      COMMON/FUNCSC/FNAME(6,78)
+      CHARACTER*4 FNAME
+10050 CONTINUE
+        DO 10051 I=1,NFUNS
+        DO 10061 J=1,6
+          IF((NAME(J).NE.FNAME(J,I)))GO TO 10051
+10061   CONTINUE
+10062   CONTINUE
+        IFUNT=I
+        RETURN
+10051 CONTINUE
+10052 CONTINUE
+      IFUNT=-1
+      WRITE(6,10070)NAME
+10070 FORMAT(' FUNC=',6A1,' NOT MATCHED')
+      RETURN
+      END
+      LOGICAL FUNCTION QFIT(NJ,XL,XH,XR,EP,ZTHR,ZEP,REM,NJP,XFUN,XFI, AX
+     *,BX,NALM,NFUN,AF,BF,VFUNS,IPRN)
+      implicit none
+      EXTERNAL VFUNS
+      real*4 XFUN,XFI
+      integer*4 NJ,NALM,NFUN,NJP,IPRN
+      real*4 XL,XH,XR,AX,BX,REM,EP
+      real*4 FSXL(10),FSXH(10),FIP(10),FFIP(10),AFIP(10),RE(10),AER(10)
+      real*4 AF(NALM,NFUN),BF(NALM,NFUN),ZTHR(NFUN),ZEP(NFUN)
+      real*4 XS,XFL,XFH,XFS,XM,DX,W,XLL,SXFL,XSXF,SXFH,DSXF,WIP, SXFIP,X
+     *IP
+      integer*4 NI,NIP,ISUB,IFUN,JSUB,IP
+      integer*4 nkp
+      DATA NKP/3/
+      save nkp
+      IF ((XH.LE.XL)) THEN
+        WRITE(6,10080)XL,XH
+10080   FORMAT(' QFIT ERROR:XL SHOULD BE < XH. XL,XH=',2G14.6)
+        QFIT=.FALSE.
+        RETURN
+      END IF
+      XS=AMAX1(XL,AMIN1(XH,XR))
+      NI=NJ-2
+      IF ((((XS.EQ.XL.OR.XS.EQ.XH).AND.NI.GE.1).OR.NI.GE.2)) THEN
+        XFL=XFUN(XL)
+      ELSE
+        QFIT=.FALSE.
+        RETURN
+      END IF
+      XFH=XFUN(XH)
+      XFS=XFUN(XS)
+      XM=AMAX1(XFH-XFS,XFS-XFL)
+      DX=XFH-XFL
+      W=XM/AMAX1(1.,AINT(NI*XM/DX))
+      NI=NI-AINT(NI-DX/W)
+      NIP=MAX0(NKP,(NJP+NI-1)/NI)
+      NIP=(NIP/2)*2+1
+      IF ((XFH-XFS.LE.XFS-XFL)) THEN
+        XLL=XFL
+      ELSE
+        XLL=XFH-NI*W
+      END IF
+      AX=1./W
+      BX=2.-XLL*AX
+      REM=0.0
+      QFIT=.TRUE.
+      SXFL=AMAX1(XLL,XFL)
+      ISUB=0
+      XSXF=XFI(SXFL)
+      CALL VFUNS(XSXF,FSXL)
+      IF((IPRN.NE.0))WRITE(6,1640) ISUB,SXFL,XSXF,(FSXL(IFUN),IFUN=1,NFU
+     *N)
+1640  FORMAT(' QFIT:ISUB,SXF,XSXF,FSX()=',I4,1P,9G11.4/(1X,12G11.4))
+      DO 10091 ISUB=1,NI
+        JSUB=ISUB+1
+        SXFH=AMIN1(XLL+W*ISUB,XH)
+        XSXF=XFI(SXFH)
+        CALL VFUNS(XSXF,FSXH)
+        IF((IPRN.NE.0))WRITE(6,1640)ISUB,SXFH,XSXF,(FSXH(IFUN),IFUN=1,NF
+     *  UN)
+        DSXF=SXFH-SXFL
+        DO 10101 IFUN=1,NFUN
+          AF(JSUB,IFUN)=(FSXH(IFUN)-FSXL(IFUN))/DSXF
+          BF(JSUB,IFUN)=(FSXL(IFUN)*SXFH-FSXH(IFUN)*SXFL)/DSXF
+10101   CONTINUE
+10102   CONTINUE
+        WIP=DSXF/(NIP+1)
+        DO 10111 IP=1,NIP
+          SXFIP=SXFL+IP*WIP
+          XIP=XFI(SXFIP)
+          CALL VFUNS(XIP,FIP)
+          DO 10121 IFUN=1,NFUN
+            FFIP(IFUN)=AF(JSUB,IFUN)*SXFIP+BF(JSUB,IFUN)
+            AFIP(IFUN)=ABS(FIP(IFUN))
+            AER(IFUN)=ABS(FFIP(IFUN)-FIP(IFUN))
+            RE(IFUN)=0.0
+            IF ((FIP(IFUN).NE.0.0)) THEN
+              RE(IFUN)=AER(IFUN)/AFIP(IFUN)
+            END IF
+            IF ((AFIP(IFUN).GE.ZTHR(IFUN))) THEN
+              REM=AMAX1(REM,RE(IFUN))
+            ELSE IF((AER(IFUN).GT.ZEP(IFUN))) THEN
+              QFIT=.FALSE.
+            END IF
+10121     CONTINUE
+10122     CONTINUE
+          IF ((IPRN.NE.0)) THEN
+            WRITE(6,10130)ISUB,IP,SXFIP,XIP,REM,QFIT,(FIP(IFUN),FFIP(IFU
+     *      N), RE(IFUN),AER(IFUN),IFUN=1,NFUN)
+10130       FORMAT(1X,2I4,1P,2G12.5,6P,F12.0,L2,1P,2G11.4,6P,F11.0,1P,G1
+     *1.4/ (1X,3(1P,2G11.4,6P,F11.0,1P,G11.4)))
+          END IF
+10111   CONTINUE
+10112   CONTINUE
+        SXFL=SXFH
+        DO 10141 IFUN=1,NFUN
+          FSXL(IFUN)=FSXH(IFUN)
+10141   CONTINUE
+10142   CONTINUE
+10091 CONTINUE
+10092 CONTINUE
+      DO 10151 IFUN=1,NFUN
+        AF(1,IFUN)=AF(2,IFUN)
+        BF(1,IFUN)=BF(2,IFUN)
+        AF(NI+2,IFUN)=AF(NI+1,IFUN)
+        BF(NI+2,IFUN)=BF(NI+1,IFUN)
+10151 CONTINUE
+10152 CONTINUE
+      QFIT=QFIT.AND.REM.LE.EP
+      NJ=NI+2
+      RETURN
+      END
+      real*4 FUNCTION PAIRDR(KA,E)
+      implicit none
+      real*4 KA,E,PAIRFR
+      integer*4 LS
+      COMMON/LPAIRR/K,LA,LC,LE
+      real*4 K
+      integer*4 LA,LC,LE
+      K=KA
+      IF ((K.LT.50.)) THEN
+        LE=1
+        LS=0
+      ELSE
+        LE=2
+        LS=3
+      END IF
+      LA=LS+1
+      LC=LS+3
+      PAIRDR=PAIRFR(E)
+      RETURN
+      END
+      real*4 FUNCTION PAIRDZ(Z,KA,E)
+      implicit none
+      real*4 Z,KA,E
+      real*4 XSIF,FCOULC,PAIRFZ
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      COMMON/LPAIRZ/K,CONST,DELC,XLNZ,DELTAM
+      real*4 K,CONST,DELC,XLNZ,DELTAM
+      K=KA
+      DELC=136.*Z**(-1./3.)*RM/K
+      CONST=(AN*RHO/WM)*R0**2*FSC*Z*(Z+XSIF(Z))*RLC/K**3
+      XLNZ=4./3.*ALOG(Z)
+      IF((K.GE.50))XLNZ=XLNZ+4.*FCOULC(Z)
+      DELTAM=EXP((21.12-XLNZ)/4.184)-0.952
+      PAIRDZ=PAIRFZ(E)
+      RETURN
+      END
+      real*4 FUNCTION PAIRFR(E)
+      implicit none
+      real*4 E
+      real*4 EPS,DEL,DELTA,A,CC
+      COMMON/BREMPR/DL1(6),DL2(6),DL3(6),DL4(6),DL5(6),DL6(6), DELCM,ALP
+     *HI(2),BPAR(2),DELPOS(2)
+      real*4 dl1,dl2,dl3,dl4,dl5,dl6,delcm,alphi,bpar,delpos
+      COMMON/DBRPR/ALFP1(2),ALFP2(2),AL2
+      real*4 ALFP1,ALFP2,al2
+      COMMON/LPAIRR/K,LA,LC,LE
+      real*4 K
+      integer*4 LA,LC,LE
+      EPS=E/K
+      DEL=1./(K*EPS*(1.-EPS))
+      IF ((DEL.GT.DELPOS(LE))) THEN
+        PAIRFR=0.0
+      ELSE
+        DELTA=DELCM*DEL
+        IF ((DELTA.LE.1.)) THEN
+          A=DL1(LA)+DELTA*(DL2(LA)+DELTA*DL3(LA))
+          CC=DL1(LC)+DELTA*(DL2(LC)+DELTA*DL3(LC))
+        ELSE
+          A=DL4(LA)+DL5(LA)*ALOG(DELTA+DL6(LA))
+          CC=DL4(LC)+DL5(LC)*ALOG(DELTA+DL6(LC))
+        END IF
+        PAIRFR=(ALFP1(LE)*CC+ALFP2(LE)*12.*(E/K-0.5)**2*A)/K
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PAIRFZ(E)
+      implicit none
+      real*4 E
+      real*4 EPS,ONEEPS,DELTA,SB1,SB2,EPLUS
+      COMMON/LPAIRZ/K,CONST,DELC,XLNZ,DELTAM
+      real*4 K,CONST,DELC,XLNZ,DELTAM
+      EPS=E/K
+      ONEEPS=1.-EPS
+      IF ((ONEEPS.EQ.0.0)) THEN
+        ONEEPS=1.18E-38
+      END IF
+      DELTA=DELC/(EPS*ONEEPS)
+      IF ((DELTA.GE.DELTAM)) THEN
+        PAIRFZ=0.0
+      ELSE
+        IF ((DELTA.LE.1.)) THEN
+          SB1=20.867+DELTA*(-3.242+DELTA*0.625)-XLNZ
+          SB2=20.209+DELTA*(-1.930+DELTA*(-0.086))-XLNZ
+        ELSE
+          SB1=21.12-4.184*ALOG(DELTA+0.952)-XLNZ
+          SB2=SB1
+        END IF
+        EPLUS=K-E
+        PAIRFZ=CONST*((E**2+EPLUS**2)*SB1+0.666667*E*EPLUS*SB2 )
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PAIRRM(K,E1,E2)
+      implicit none
+      real*4 K,E1,E2,PAIRRZ
+      integer*4 I
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      PAIRRM=0.
+      DO 10161 I=1,NE
+        PAIRRM=PAIRRM+PZ(I)*PAIRRZ(Z(I),K,E1,E2)
+10161 CONTINUE
+10162 CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION PAIRRR(K,E1,E2)
+      implicit none
+      real*4 K,E1,E2
+      EXTERNAL PAIRFR
+      real*4 DUMMY,PAIRDR,QD
+      DUMMY=PAIRDR(K,E1)
+      PAIRRR=QD(PAIRFR,E1,E2,'PAIRFR')
+      RETURN
+      END
+      real*4 FUNCTION PAIRRZ(Z,K,E1,E2)
+      implicit none
+      real*4 Z,K,E1,E2
+      real*4 DUMMY,PAIRDZ,QD
+      EXTERNAL PAIRFZ
+      DUMMY=PAIRDZ(Z,K,E1)
+      PAIRRZ=QD(PAIRFZ,E1,E2,'PAIRFZ')
+      RETURN
+      END
+      real*4 FUNCTION PAIRTE(K)
+      implicit none
+      real*4 K,PAIRTZ
+      integer*4 I
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      PAIRTE=0.0
+      IF((K.LE.2.0*RM))RETURN
+      DO 10171 I=1,NE
+        PAIRTE=PAIRTE+PZ(I)*PAIRTZ(Z(I),K)
+10171 CONTINUE
+10172 CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION PAIRTM(K0)
+      implicit none
+      real*4 K0,PAIRRM
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((K0.LE.2.*RM)) THEN
+        PAIRTM=0.0
+      ELSE
+        PAIRTM=PAIRRM(K0,RM,K0-RM)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PAIRTR(K0)
+      implicit none
+      real*4 K0,PAIRRR
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      IF ((K0.LE.2.*RM)) THEN
+        PAIRTR=0.0
+      ELSE
+        PAIRTR=PAIRRR(K0,RM,K0-RM)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PAIRTU(K)
+      implicit none
+      real*4 K,PAIRTE,PAIRTM
+      IF ((K.LT.50)) THEN
+        PAIRTU=PAIRTE(K)
+      ELSE
+        PAIRTU=PAIRTM(K)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PAIRTZ(Z,K)
+      implicit none
+      real*4 Z,K
+      real*4 PCON,AINTP
+      integer*4 IZ
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      IF ((K.LE.RMT2)) THEN
+        PAIRTZ=0.0
+      ELSE
+        PCON=1.E-24*(AN*RHO/WM)*RLC
+        IZ=Z
+        PAIRTZ=PCON*AINTP(K,PRE,17,PRD(1,IZ),1,.TRUE.,.FALSE.)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION PBR1(E)
+      implicit none
+      real*4 E,BREM,BREMTM,BHABTM,ANIHTM
+      BREM=BREMTM(E)
+      PBR1=BREM/(BREM+BHABTM(E)+ANIHTM(E))
+      RETURN
+      END
+      real*4 FUNCTION PBR2(E)
+      implicit none
+      real*4 E,BRBH,BREMTM,BHABTM,ANIHTM
+      BRBH=BREMTM(E)+BHABTM(E)
+      PBR2=BRBH/(BRBH+ANIHTM(E))
+      RETURN
+      END
+      real*4 FUNCTION PDEDX(E)
+      implicit none
+      real*4 E,SPTOTP
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      PDEDX=SPTOTP(E,AE,AP)
+      RETURN
+      END
+      real*4 FUNCTION PHOTTE(K)
+      implicit none
+      real*4 K,PHOTTZ
+      integer*4 I
+      COMMON/MIXDAT/NE,PZ(20),Z(20),WA(20),RHOZ(20), LMED,GASP,TPZ,EZ
+      integer*4 NE,LMED
+      real*4 PZ,Z,WA,RHOZ,GASP,TPZ,EZ
+      COMMON/MXDATC/MTYP(4),ASYM(20),MEDIUM(24),IDSTRN(24)
+      CHARACTER*4 MTYP,ASYM,MEDIUM,IDSTRN
+      PHOTTE=0.0
+      DO 10181 I=1,NE
+        PHOTTE=PHOTTE+PZ(I)*PHOTTZ(Z(I),K)
+10181 CONTINUE
+10182 CONTINUE
+      RETURN
+      END
+      real*4 FUNCTION PHOTTZ(Z,K)
+      implicit none
+      real*4 Z,K,PCON,AINTP
+      integer*4 IZ
+      COMMON/PHPAIR/NPHE(100),PHE(61,100),PHD(61,100), EKEDGE(100),PRE(1
+     *7),PRD(17,100)
+      integer*4 NPHE
+      real*4 PHE,PHD,EKEDGE,PRE,PRD
+      COMMON/PMCONS/PI,C,RME,HBAR,ECGS,EMKS,AN
+      real*4 PI,C,RME,HBAR,ECGS,EMKS,AN
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      PCON=1.E-24*(AN*RHO/WM)*RLC
+      IZ=Z
+      PHOTTZ=PCON*AINTP(K,PHE(1,IZ),NPHE(IZ),PHD(1,IZ),1,.TRUE.,.TRUE.)
+      RETURN
+      END
+      real*4 FUNCTION PSIG(E)
+      implicit none
+      real*4 E,BREMTM,BHABTM,ANIHTM
+      PSIG=BREMTM(E)+BHABTM(E)+ANIHTM(E)
+      RETURN
+      END
+      real*4 FUNCTION QD(F,A,B,MSG)
+      implicit none
+      common/file_names/input_file,output_file,density_file, xsection_fi
+     *le,formf_file,egs_home,lenfn, using_sym_links
+      character*256 input_file,output_file,density_file,egs_home, xsecti
+     *on_file,formf_file
+      integer*4 lenfn
+      logical using_sym_links
+      EXTERNAL F
+      real*4 A,B
+      CHARACTER*6 MSG
+      logical first_time
+      data first_time/.true./
+      save first_time
+      REAL DCADRE,ADUM,BDUM,ERRDUM
+      integer*4 IER
+      ADUM=A
+      BDUM=B
+      QD=DCADRE(F,ADUM,BDUM,1.E-16,1.E-5,ERRDUM,IER)
+      IF ((IER.GT.66)) THEN
+        IF (( first_time )) THEN
+          first_time = .false.
+          output_file(lenfn-7:lenfn) = 'pegs4err'
+          open(10,file=output_file,status='unknown')
+        END IF
+        WRITE(10,10190)IER,MSG,A,B,QD,ERRDUM
+10190   FORMAT (' DCADRE CODE=',I4,' FOR INTEGRAL ',A6,' FROM ',1P,G14.6
+     *,' TO ',G14.6, ',QD=',G14.6,'+-',G14.6)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION SPIONB(E0,EE,POSITR)
+      implicit none
+      real*4 E0,EE
+      LOGICAL POSITR
+      real*4 G,EEM,T,ETA2,BETA2,ALETA2,X,D,FTERM,TP2,D2,D3,D4,DELTA
+      integer*4 I
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/LSPION/CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      real*4 CBAR,X0,X1,SK,TOLN10,AFACT,SPC1,SPC2,ISSB,IEV
+      COMMON/EPSTAR/EPSTEN(150),EPSTD(150),EPSTFL,EPSTTL,NEPST,IEPST, NE
+     *LEPS,ZEPST(20),WEPST(20),IAPRIM,IAPRFL
+      integer*4 EPSTFL,ZEPST,NELEPS,IAPRIM,IAPRFL,NEPST,IEPST
+      CHARACTER EPSTTL*80
+      real*4 EPSTEN,EPSTD,WEPST
+      G=E0/RM
+      EEM=EE/RM-1.
+      T=G-1
+      ETA2=T*(G+1.)
+      BETA2=ETA2/G**2
+      ALETA2=ALOG(ETA2)
+      X=0.21715*ALETA2
+      IF ((.NOT.POSITR)) THEN
+        D=AMIN1(EEM,0.5*T)
+        FTERM=-1.-BETA2+ALOG((T-D)*D)+T/(T-D) +(D*D/2.+(2.*T+1.)*ALOG(1.
+     *  -D/T))/(G*G)
+      ELSE
+        D=AMIN1(EEM,T)
+        TP2=T+2.
+        D2=D*D
+        D3=D*D2
+        D4=D*D3
+        FTERM=ALOG(T*D)-(BETA2/T)*( T + 2.*D - (3.*D2/2.)/TP2 -(D-D3/3.)
+     *  /(TP2*TP2)-(D2/2.-T*D3/3.+D4/4.)/TP2**3)
+      END IF
+      IF ((EPSTFL .EQ. 0)) THEN
+        IF ((X.LE.X0)) THEN
+          DELTA=0.0
+        ELSE IF((X.LT.X1)) THEN
+          DELTA=TOLN10*X - CBAR + AFACT*(X1 - X)**SK
+        ELSE
+          DELTA=TOLN10*X - CBAR
+        END IF
+      ELSE
+        IF ((E0 .GE. EPSTEN(IEPST))) THEN
+          IF ((E0 .EQ. EPSTEN(IEPST))) THEN
+            GO TO 10200
+          END IF
+          DO 10211 I=IEPST,NEPST-1
+            IF ((E0.LT.EPSTEN(I+1))) THEN
+              IEPST = I
+              GO TO 10200
+            END IF
+10211     CONTINUE
+10212     CONTINUE
+          IEPST = NEPST
+          GO TO 10200
+        ELSE
+          DO 10221 I=IEPST,2,-1
+            IF ((E0 .GE. EPSTEN(I-1))) THEN
+              IEPST = I-1
+              GO TO 10200
+            END IF
+10221     CONTINUE
+10222     CONTINUE
+          IEPST = 1
+        END IF
+10200   IF ((IEPST .LT. NEPST)) THEN
+          DELTA = EPSTD(IEPST) + (E0 - EPSTEN(IEPST))/ (EPSTEN(IEPST+1)
+     *    - EPSTEN(IEPST)) * (EPSTD(IEPST+1) - EPSTD(IEPST))
+        ELSE
+          DELTA = EPSTD(NEPST)
+        END IF
+      END IF
+      SPIONB=(SPC1/BETA2)*(ALOG(T + 2.) - SPC2 + FTERM - DELTA)
+      RETURN
+      END
+      real*4 FUNCTION SPIONE(E0,EE)
+      implicit none
+      real*4 E0,EE,SPIONB
+      SPIONE=SPIONB(E0,EE,.FALSE.)
+      RETURN
+      END
+      real*4 FUNCTION SPIONP(E0,EE)
+      implicit none
+      real*4 E0,EE,SPIONB
+      SPIONP=SPIONB(E0,EE,.TRUE.)
+      RETURN
+      END
+      real*4 FUNCTION SPTOTE(E0,EE,EG)
+      implicit none
+      real*4 E0,EE,EG
+      real*4 SPIONE,BRMSTM
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      IF ((IUNRST.EQ.0)) THEN
+        SPTOTE=SPIONE(E0,EE)+BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.1)) THEN
+        SPTOTE=SPIONE(E0,E0)
+      ELSE IF((IUNRST.EQ.2)) THEN
+        SPTOTE=SPIONE(E0,E0)+BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.3)) THEN
+        SPTOTE=SPIONE(E0,E0)+BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.4)) THEN
+        SPTOTE=SPIONE(E0,EE)+BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.5)) THEN
+        SPTOTE=BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.6)) THEN
+        SPTOTE=BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.7)) THEN
+        SPTOTE=SPIONE(E0,EE)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION SPTOTP(E0,EE,EG)
+      implicit none
+      real*4 E0,EE,EG
+      real*4 SPIONP,BRMSTM
+      COMMON/THRESH/AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL,IUNRST
+      real*4 AP,AE,UP,UE,TE,TET2,TEM,THBREM,THMOLL
+      integer*4 IUNRST
+      IF ((IUNRST.EQ.0)) THEN
+        SPTOTP=SPIONP(E0,EE)+BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.1)) THEN
+        SPTOTP=SPIONP(E0,E0)
+      ELSE IF((IUNRST.EQ.2)) THEN
+        SPTOTP=SPIONP(E0,E0)+BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.3)) THEN
+        SPTOTP=SPIONP(E0,E0)+BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.4)) THEN
+        SPTOTP=SPIONP(E0,EE)+BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.5)) THEN
+        SPTOTP=BRMSTM(E0,E0)
+      ELSE IF((IUNRST.EQ.6)) THEN
+        SPTOTP=BRMSTM(E0,EG)
+      ELSE IF((IUNRST.EQ.7)) THEN
+        SPTOTP=SPIONP(E0,EE)
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION TMXB(E)
+      implicit none
+      real*4 E
+      real*4 ESQ,BETA2,PX2
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      COMMON/MOLVAR/RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC, EDEN
+     *,BLCC,XCC,TEFF0,XR0
+      real*4 RHO,WM,ZC,ZT,ZB,ZF,ZS,ZE,ZX,ZA,ZG,ZP,ZV,ZU,RLC,EDEN,BLCC, X
+     *CC,TEFF0,XR0
+      ESQ=E**2
+      BETA2=1.0-RMSQ/ESQ
+      PX2=ESQ*BETA2/XCC**2
+      TMXB=PX2*BETA2/ALOG(BLCC*PX2)
+      RETURN
+      END
+      real*4 FUNCTION TMXDE2(E)
+      implicit none
+      real*4 E,ESQ,BETASQ,TMXB
+      COMMON/DERCON/RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      real*4 RADDEG,FSC,ERGMEV,R0,RM,RMT2,RMSQ,A22P9,A6680
+      ESQ=E**2
+      BETASQ=1.0-RMSQ/ESQ
+      TMXDE2=TMXB(E)/(ESQ*BETASQ**2)
+      RETURN
+      END
+      real*4 FUNCTION TMXS(E)
+      implicit none
+      real*4 E,TMXB
+      real*4 SAFETY,TABSMX
+      DATA SAFETY/0.8/,TABSMX/10.0/
+      save SAFETY,TABSMX
+      TMXS=AMIN1(TMXB(E)*SAFETY,TABSMX)
+      RETURN
+      END
+      real*4 FUNCTION XSIF (Z)
+      implicit none
+      real*4 Z,FCOULC
+      integer*4 IZ
+      COMMON/RADLEN/ALRAD(4),ALRADP(4),A1440,A183
+      real*4 ALRAD,ALRADP,A1440,A183
+      IF ((Z.LE.4.0)) THEN
+        IZ=Z
+        XSIF=ALRADP(IZ)/(ALRAD(IZ)-FCOULC(Z))
+      ELSE
+        XSIF=ALOG(A1440*Z**(-2./3.))/(ALOG(A183*Z**(-1./3.))-FCOULC(Z))
+      END IF
+      RETURN
+      END
+      real*4 FUNCTION ZTBL(IASYM)
+      implicit none
+      COMMON/ELEMTB/NET,WATBL(100),RHOTBL(100), ITBL(100),ISTATB(100)
+      real*4 ITBL
+      COMMON/ELMTBC/ASYMT(100)
+      CHARACTER*4 ASYMT
+      integer*4 net,istatb
+      real*4 watbl,rhotbl
+      CHARACTER*4 IASYM,IA
+      integer*4 ie
+      DATA IA/'A'/
+      save ia
+      IF ((IASYM.EQ.IA)) THEN
+        ZTBL=18.0
+        RETURN
+      END IF
+      DO 10231 IE=1,NET
+        IF ((IASYM.EQ.ASYMT(IE))) THEN
+          ZTBL=IE
+          RETURN
+        END IF
+10231 CONTINUE
+10232 CONTINUE
+      WRITE(6,10240)IASYM,NET
+10240 FORMAT(1X,A2,' NOT AN ATOMIC SYMBOL FOR AN ELEMENT WITH Z LE ',I3)
+      ZTBL=0.0
+      RETURN
+      END
+      subroutine open_units
+      implicit none
+      common/file_names/input_file,output_file,density_file, xsection_fi
+     *le,formf_file,egs_home,lenfn, using_sym_links
+      character*256 input_file,output_file,density_file,egs_home, xsecti
+     *on_file,formf_file
+      integer*4 lenfn
+      logical using_sym_links
+      integer narg, iargc
+      integer i,lnblnk1,l,l1
+      logical have_arg,is_there
+      character arg*256,arg1*256,inp_file*256,fn*512,hen_house*128
+      logical egs_isdir,append
+      narg = iargc()
+      IF (( narg .EQ. 0 )) THEN
+        using_sym_links = .true.
+        fn = 'fort.5'
+        open(5,file='fort.5',status='old',err=10250)
+        open(7,file='fort.7',status='new',err=10260)
+        open(6,file='fort.6',status='unknown')
+        open(10,file='fort.10',status='unknown')
+        open(21,file='fort.21',status='unknown')
+        inquire(file='fort.20',exist=is_there)
+        IF (( is_there )) THEN
+          open(20,file='fort.20',status='old')
+        END IF
+        fn = 'fort.8'
+        open(8,file=fn,status='old',err=10270)
+        fn = 'fort.9'
+        open(9,file=fn,status='old',err=10280)
+        return
+      END IF
+      IF ((narg .EQ. 1)) THEN
+        call getarg(1,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-h' ) .OR. ( l .EQ. 6 .AND.
+     *   arg(:l) .EQ. '--help' ) )) THEN
+          call show_pegs4_help()
+          call exit(0)
+        END IF
+      END IF
+      using_sym_links = .false.
+      append = .false.
+      DO 10291 i=1,narg
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-a' ) .OR. ( l .EQ. 8 .AND.
+     *   arg(:l) .EQ. '--append' ) )) THEN
+          append = .true.
+          goto 10300
+        END IF
+10291 CONTINUE
+10292 CONTINUE
+10300 CONTINUE
+      have_arg = .false.
+      l = 0
+      DO 10311 i=1,len(hen_house)
+        hen_house(i:i) = ' '
+10311 CONTINUE
+10312 CONTINUE
+      have_arg = .false.
+      l = 0
+      DO 10321 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-h' ) .OR. ( l .EQ. 11 .AND
+     *  . arg(:l) .EQ. '--hen-house' ) )) THEN
+          call getarg(i+1,hen_house)
+          l = lnblnk1(hen_house)
+          IF (( egs_isdir(hen_house) )) THEN
+            have_arg = .true.
+          END IF
+        END IF
+10321 CONTINUE
+10322 CONTINUE
+      IF (( .NOT.have_arg )) THEN
+        hen_house = 'F:/Git/EGSnrc-master/HEN_HOUSE/'
+      END IF
+      DO 10331 i=1,len(egs_home)
+        egs_home(i:i) = ' '
+10331 CONTINUE
+10332 CONTINUE
+      DO 10341 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-e' ) .OR. ( l .EQ. 10 .AND
+     *  . arg(:l) .EQ. '--egs-home' ) )) THEN
+          call getarg(i+1,egs_home)
+          l = lnblnk1(egs_home)
+          IF (( egs_isdir(egs_home ) )) THEN
+            have_arg = .true.
+          END IF
+        END IF
+10341 CONTINUE
+10342 CONTINUE
+      IF (( l .EQ. 0 .OR. .NOT.have_arg )) THEN
+        call getenv('EGS_HOME',egs_home)
+        l = lnblnk1(egs_home)
+        IF (( l .EQ. 0 )) THEN
+          write(6,*)
+          write(6,*) ' EGS_HOME was hot passed as an argument and also '
+          write(6,*) ' the environment variable EGS_HOME is not set! '
+          write(6,*) ' Quiting now.'
+          write(6,*)
+          call exit(1)
+        END IF
+      END IF
+      DO 10351 i=1,len(inp_file)
+        inp_file(i:i) = ' '
+10351 CONTINUE
+10352 CONTINUE
+      DO 10361 i=1,len(output_file)
+        output_file(i:i) = ' '
+10361 CONTINUE
+10362 CONTINUE
+      DO 10371 i=1,len(input_file)
+        input_file(i:i) = ' '
+10371 CONTINUE
+10372 CONTINUE
+      DO 10381 i=1,len(density_file)
+        density_file(i:i) = ' '
+10381 CONTINUE
+10382 CONTINUE
+      DO 10391 i=1,len(fn)
+        fn(i:i) = ' '
+10391 CONTINUE
+10392 CONTINUE
+      have_arg = .false.
+      DO 10401 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-i' ) .OR. ( l .EQ. 7 .AND.
+     *   arg(:l) .EQ. '--input' ) )) THEN
+          call getarg(i+1,arg)
+          l1 = lnblnk1(arg)
+          arg1(:len(arg1)) = ' '
+          IF (( l1 .GT. 10 .AND. arg(l1-8:l1) .EQ. '.pegs4inp' )) THEN
+            arg1(:l1-9) = arg(:l1-9)
+            arg(l1-8:l1) = '.pegs4lst'
+            inp_file(:l1-9) = arg(:l1-9)
+          ELSE
+            IF (( l1 .GT. 248 )) THEN
+              write(6,*) ' Input file name is too long! '
+              call exit(1)
+            END IF
+            inp_file(:l1) = arg(:l1)
+            arg1 = arg(:lnblnk1(arg)) // '.pegs4lst'
+            arg(l1+1:l1+9) = '.pegs4inp'
+            l1 = l1 + 9
+          END IF
+          fn(:l1) = arg(:l1)
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            have_arg = .true.
+            goto 10410
+          END IF
+          fn = egs_home(:lnblnk1(egs_home)) // 'pegs4' // char(92) // 'i
+     *nputs' // char(92) // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            have_arg = .true.
+            goto 10410
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4' // char(92) //
+     *    'inputs' // char(92) // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            have_arg = .true.
+            goto 10410
+          END IF
+          write(6,*) '******************** Error ***********************
+     ****'
+          write(6,'(a,a)') ' you specified an input file named ',arg(:l1
+     *    )
+          write(6,'(a,a)') ' but the file does not exist in'
+          write(6,'(a,a)') '     ',egs_home(:lnblnk1(egs_home)) // 'pegs
+     *4/inputs/'
+          write(6,'(a,a)') '     ',hen_house(:lnblnk1(hen_house)) // 'pe
+     *gs4/inputs/'
+          write(6,'(a)') '      the current working directory'
+          write(6,'(a)') ' and is also not an existing absolute file nam
+     *e'
+          write(6,*) '**************************************************
+     ****'
+          call exit(1)
+        END IF
+10401 CONTINUE
+10402 CONTINUE
+10410 IF (( have_arg )) THEN
+        open(5,file=fn,status='old',err=10250)
+        DO 10421 i=1,lnblnk1(fn)
+          input_file(i:i) = fn(i:i)
+10421   CONTINUE
+10422   CONTINUE
+        DO 10431 i=lnblnk1(fn)+1,len(input_file)
+          input_file(i:i) = ' '
+10431   CONTINUE
+10432   CONTINUE
+      ELSE
+        DO 10441 i=1,len(input_file)
+          input_file(i:i) = ' '
+10441   CONTINUE
+10442   CONTINUE
+        write(6,'(/a/)') 'No input file. All input must come from the te
+     *rminal'
+      END IF
+      have_arg = .false.
+      DO 10451 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-o' ) .OR. ( l .EQ. 8 .AND.
+     *   arg(:l) .EQ. '--output' ) )) THEN
+          call getarg(i+1,arg)
+          have_arg = .true.
+          goto 10460
+        END IF
+10451 CONTINUE
+10452 CONTINUE
+10460 IF (( have_arg )) THEN
+        l1 = lnblnk1(arg)
+        IF (( l1 .LT. 10 .OR. arg(l1-8:l1) .NE. '.pegs4dat' )) THEN
+          arg = arg(:lnblnk1(arg)) // '.pegs4dat'
+        END IF
+      ELSE
+        DO 10471 i=1,len(arg)
+          arg(i:i) = ' '
+10471   CONTINUE
+10472   CONTINUE
+        arg(:lnblnk1(inp_file)) = inp_file(:lnblnk1(inp_file))
+        call egs_strip_path(arg)
+        l = lnblnk1(arg)
+        IF (( l .EQ. 0 )) THEN
+          write(6,*) ' Without input file you must explicitly specify th
+     *e '
+          write(6,*) ' output file'
+          call exit(1)
+        END IF
+        arg(l+1:l+10) = '.pegs4dat'
+      END IF
+      fn = egs_home(:lnblnk1(egs_home)) // 'pegs4' // char(92) // 'data'
+     * // char(92) // arg
+      IF (( append )) THEN
+        open(7,file=fn,status='old',access='append',err=10480)
+      ELSE
+        open(7,file=fn,status='new',err=10260)
+      END IF
+      fn = egs_home(:lnblnk1(egs_home)) // 'pegs4' // char(92) // 'input
+     *s' // char(92) // arg
+      output_file = egs_home(:lnblnk1(egs_home)) // 'pegs4' // char(92)
+     *// 'data' // char(92) // arg
+      l = lnblnk1(fn)
+      lenfn = l
+      IF (( lnblnk1(inp_file) .GT. 0 )) THEN
+        fn(l-7:l) = 'pegs4lst'
+        open(6,file=fn,status='unknown')
+      END IF
+      have_arg = .false.
+      fn(:len(fn)) = ' '
+      DO 10491 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-d' ) .OR. ( l .EQ. 16 .AND
+     *  . arg(:l) .EQ. '--density-effect' ) )) THEN
+          call getarg(i+1,arg)
+          arg = arg(:lnblnk1(arg)) // '.density'
+          fn = arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+          fn = egs_home(:lnblnk1(egs_home)) // 'pegs4/density_correction
+     *s/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+          fn = egs_home(:lnblnk1(egs_home)) // 'pegs4/density_correction
+     *s/elements/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+          fn = egs_home(:lnblnk1(egs_home)) // 'pegs4/density_correction
+     *s/compounds/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/density_correcti
+     *ons/elements/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/density_correcti
+     *ons/compounds/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            open(20,file=fn,status='old')
+            have_arg = .true.
+            goto 10500
+          END IF
+        END IF
+10491 CONTINUE
+10492 CONTINUE
+10500 IF (( have_arg )) THEN
+        write(6,'(/a,a/)') '************ Using density file ',fn(:lnblnk
+     *  1(fn))
+        DO 10511 i=1,lnblnk1(fn)
+          density_file(i:i) = fn(i:i)
+10511   CONTINUE
+10512   CONTINUE
+      END IF
+      have_arg = .false.
+      fn(:len(fn)) = ' '
+      DO 10521 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-x' ) .OR. ( l .EQ. 10 .AND
+     *  . arg(:l) .EQ. '--xsection' ) )) THEN
+          call getarg(i+1,arg)
+          l = lnblnk1(arg)
+          fn(:l) = arg(:l)
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10530
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10530
+          END IF
+          arg = arg(:l) // '.dat'
+          l = l + 4
+          fn = arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10530
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10530
+          END IF
+        END IF
+10521 CONTINUE
+10522 CONTINUE
+      fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/pgs4pepr.dat'
+10530 CONTINUE
+        DO 10531 i=1,len(xsection_file)
+        xsection_file(i:i) = ' '
+10531 CONTINUE
+10532 CONTINUE
+      DO 10541 i=1,lnblnk1(fn)
+        xsection_file(i:i) = fn(i:i)
+10541 CONTINUE
+10542 CONTINUE
+      open(8,file=fn,status='old',err=10270)
+      write(6,'(a,a/)') '************ Using cross section data file ', f
+     *n(:lnblnk1(fn))
+      have_arg = .false.
+      fn(:len(fn)) = ' '
+      DO 10551 i=1,narg-1
+        call getarg(i,arg)
+        l = lnblnk1(arg)
+        IF (( ( l .EQ. 2 .AND. arg(:l) .EQ. '-f' ) .OR. ( l .EQ. 13 .AND
+     *  . arg(:l) .EQ. '--form-factor' ) )) THEN
+          call getarg(i+1,arg)
+          l = lnblnk1(arg)
+          fn(:l) = arg(:l)
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10560
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10560
+          END IF
+          arg = arg(:l) // '.dat'
+          l = l+4
+          fn = arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10560
+          END IF
+          fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/' // arg
+          inquire(file=fn,exist=is_there)
+          IF (( is_there )) THEN
+            goto 10560
+          END IF
+        END IF
+10551 CONTINUE
+10552 CONTINUE
+      fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/pgs4form.dat'
+10560 CONTINUE
+        DO 10561 i=1,len(formf_file)
+        formf_file(i:i) = ' '
+10561 CONTINUE
+10562 CONTINUE
+      DO 10571 i=1,lnblnk1(fn)
+        formf_file(i:i) = fn(i:i)
+10571 CONTINUE
+10572 CONTINUE
+      open(9,file=fn,status='old',err=10280)
+      write(6,'(a,a/)') '************ Using form factor data file ', fn(
+     *:lnblnk1(fn))
+      fn = hen_house(:lnblnk1(hen_house)) // 'pegs4/aprime.data'
+      open(22,file=fn,status='old',err=10580)
+      return
+10250 write(6,'(//a,a//)') ' Failed to open file ',fn(:lnblnk1(fn))
+      call exit(1)
+10260 write(6,'(//a,a)') ' Data file ',fn(:lnblnk1(fn)),' exists.'
+      write(6,'(a//)') ' Remove or rename it and retry '
+      call exit(2)
+10480 write(6,'(//a/,a/,a)') ' You have specified the append option, but
+     * file ', fn(:lnblnk1(fn)),' does not exist '
+      call exit(6)
+10270 write(6,'(//a,a//)') ' Failed to open x-section file ',fn(:lnblnk1
+     *(fn))
+      call exit(3)
+10280 write(6,'(//a,a//)') ' Failed to open form-factor file ',fn(:lnbln
+     *k1(fn))
+      call exit(4)
+10580 write(6,'(//a,a//)') ' Failed to open Aprime data file ',fn(:lnbln
+     *k1(fn))
+      call exit(5)
+      end
+      integer function lnblnk1(string)
+      character*(*) string
+      integer i,j
+      DO 10591 i=len(string),1,-1
+        j = ichar(string(i:i))
+        IF (( j .NE. 9 .AND. j .NE. 10 .AND. j .NE. 11 .AND. j .NE. 12 .
+     *  AND. j .NE. 13 .AND. j .NE. 32 )) THEN
+          lnblnk1 = i
+          return
+        END IF
+10591 CONTINUE
+10592 CONTINUE
+      lnblnk1 = 0
+      return
+      end
+      subroutine egs_strip_path(fname)
+      implicit none
+      character*(*) fname
+      integer*4 i,l,l1,lnblnk1,j
+      l = lnblnk1(fname)
+      DO 10601 i=l,1,-1
+        IF (( fname(i:i) .EQ. char(92) )) THEN
+          l1 = l-i
+          fname(:l1) = fname(i+1:l)
+          DO 10611 j=l1+1,len(fname)
+            fname(j:j) = ' '
+10611     CONTINUE
+10612     CONTINUE
+          return
+        END IF
+10601 CONTINUE
+10602 CONTINUE
+      return
+      end
+      subroutine show_pegs4_help()
+      write(*,*) 'The usage is somewhat different from the previous'
+      write(*,*) 'EGSnrc or EGS4 environments since all parameters'
+      write(*,*) 'are now passed on the command line.'
+      write(*,*) 'To run the code it is best to go to the directory'
+      write(*,*) 'where the input file is stored (ifile.pegs4inp has'
+      write(*,*) 'the same format as defined in the EGSnrc manual)'
+      write(*,*) 'and issue the command:'
+      write(*,*)
+      write(*,'(a,$)') 'pegs4.exe -i ifile [-o ofile] [-a] [-d density]'
+      write(*,*) '[-x CrossSectData] [-e HEN_HOUSE]'
+      write(*,*)
+      write(*,*) '-i ifile         => ifile.pegs4inp is the input file'
+      write(*,*) '-o ofile         => if present output file is'
+      write(*,*) '                    $EGS_HOME/pegs4/data/ofile.pegs4da
+     *t'
+      write(*,*) '                    & if not present output  is'
+      write(*,*) '                    $EGS_HOME/pegs4/data/ifile.pegs4da
+     *t'
+      write(*,*) '-a               => if present that output is appended
+     * to'
+      write(*,*) '                    [i|o]file.pegs4dat'
+      write(*,*) '-d density       => if present density effect is in'
+      write(*,*) '                    density.density'
+      write(*,*) '-x CrossSectData => if present use'
+      write(*,*) '                    $HEN_HOUSE/pegs4/CrossSectData as'
+      write(*,*) '                    cross section file instead of'
+      write(*,*) '                    $HEN_HOUSE/pegs4/pgs4pepr.dat'
+      write(*,*) '-e HEN_HOUSE     => if present store data on'
+      write(*,*) '                    $HEN_HOUSE/pegs4/data'
+      write(*,*) '                    rather than $EGS_HOME/pegs4/data'
+      write(*,*) '-h or --help     => print this help screen'
+      return
+      end
+C***************************************************************************
+C
+C   This file was automatically generated by:
+C   EGSnrc-configure-windows.exe version 1.0
+C   It contains various subroutines and functions for date, time,
+C   CPU time, host name, etc.
+C
+C   Attention: all changes will be lost the next time you run
+C   EGSnrc-configure-windows.exe.
+C
+C***************************************************************************
+
+C##############################################################################
+C
+C  EGSnrc egs_system subroutine v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*****************************************************************************
+C egs_system(command)  runs a system command and returns the status
+C                      command must be null-terminated
+C*****************************************************************************
+      integer function egs_system(command)
+      character*(*) command
+      integer system, istat
+      istat = system(command)
+      egs_system = istat
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc egs_isdir subroutine v2
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*****************************************************************************
+C
+C  egs_isdir(file_name)  Returns .true., if the string file_name points to
+C                        an existing directory.
+C                        This version uses the inquire intrinsic, which
+C                        only tells us whether file_name points to an existing
+C                        object (file, directory, link, etc.), not specifically
+C                        an existing directory. But that's all I need.
+C                        The reason for having different versions of this
+C                        function is that on some systems (e.g. OSF1) the
+C                        inquire intrinsic only returns .true. for existing
+C                        files, not for existing directories.
+C
+C*****************************************************************************
+
+      logical function egs_isdir(file_name)
+      implicit none
+      character*(*) file_name
+      logical ex
+      inquire(file=file_name,exist=ex)
+      egs_isdir = ex
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc date subroutines v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C***************************************************************************
+C
+C   egs_fdate(out):  print a 24 char date and time string in the form
+C                         'Tue Mar 18 08:16:42 2003'
+C                    to the unit specified by out without end of line
+C                    i.e. the sequence
+C                    write(6,'(a,$)') 'Today is '
+C                    call egs_fdate(6)
+C                    write(6,'(a)') '. Have a nice date'
+C                    should result in something like
+C                    Today is Tue Mar 18 08:16:42 2003. Have a nice date
+C                    printed to unit 6.
+C
+C***************************************************************************
+
+      subroutine egs_fdate(ounit)
+      integer ounit
+      character*24 string
+      call fdate(string)
+      write(ounit,'(a,$)') string
+      end
+
+C***************************************************************************
+C
+C   egs_get_fdate(string) assignes a 24 char date and time string to string
+C                         string must be at least 24 chars long, otherwise
+C                         this subroutine has no effect.
+C
+C***************************************************************************
+
+      subroutine egs_get_fdate(string)
+      character*(*) string
+      if( len(string).ge.24 ) call fdate(string)
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc egs_date_and_time subroutine v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+      subroutine egs_date_and_time(vnow)
+      integer vnow(8)
+      character dat*8,tim*10,zon*5
+      call date_and_time(dat,tim,zon,vnow)
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc egs_date subroutine v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*************************************************************************
+C
+C egs_date(ounit): print a 11 char string in the form
+C                     '18-Mar-2003'
+C                  to the unit specified by ounit
+C                  No end of line character is inserted
+C
+C*************************************************************************
+
+      subroutine egs_date(ounit)
+      integer ounit
+      character string*24, dat*11
+      call fdate(string)
+      dat(1:2) = string(9:10)
+      dat(3:3) = '-'
+      dat(4:6) = string(5:7)
+      dat(7:7) = '-'
+      dat(8:11) = string(21:24)
+      write(ounit,'(a,$)') dat
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc egs_time subroutine v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C $Id: egs_time_v1.f,v 1.1 2003/07/11 19:17:08 iwan Exp $
+C*************************************************************************
+C
+C egs_time(ounit): print a 8 char string in the form hh:mm:ss
+C                  to the unit specified by ounit
+C                  No end of line character is inserted
+C
+C*************************************************************************
+
+      subroutine egs_time(ounit)
+      integer ounit
+      character string*24
+      call fdate(string)
+      write(ounit,'(a,$)') string(12:19)
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc seconds timing subroutines v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*****************************************************************************
+C
+C real function egs_secnds(t0): returns seconds passed since midnight minus t0
+C
+C*****************************************************************************
+
+      real function egs_secnds(t0)
+      real t0,t1
+      character dat*8,tim*10,zon*5
+      integer values(8)
+      call date_and_time(dat,tim,zon,values)
+      t1 = 3600.*values(5) + 60.*values(6) + values(7) + 0.001*values(8)
+      egs_secnds = t1 - t0
+      return
+      end
+
+C*****************************************************************************
+C
+C real function egs_tot_time()
+C
+C   On first call returns seconds passed since 1/1/1970
+C   On subsequent calls returns
+C     - seconds since last call, if flag = 0
+C     - seconds since first call, else
+C
+C*****************************************************************************
+
+      real function egs_tot_time(flag)
+      integer flag
+      character dat*8,tim*10,zon*5
+      integer vnow(8), vlast(8),i
+      real t,egs_time_diff,t0
+      data vlast/1970,1,1,5*0/,t0/-1/
+      save vlast,t0
+      call date_and_time(dat,tim,zon,vnow)
+      t = egs_time_diff(vlast,vnow)
+      do i=1,8
+        vlast(i)=vnow(i)
+      end do
+      if( t0.lt.0 ) then
+        t0 = 0
+        egs_tot_time = t
+      else
+        t0 = t0 + t
+        if(flag.eq.0) then
+          egs_tot_time = t
+        else
+          egs_tot_time = t0
+        end if
+      end if
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc date and time subroutines
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C****************************************************************************
+C
+C Returns the time difference between vstart and vend
+C vstart and vend are integer arrays of dimension 8 with elements
+C corresponding to the specification of the data_and_time routine, i.e.
+C   array(1) = year
+C   array(2) = month of the year   (1...12)
+C   array(3) = day of the month    (1...31)
+C   array(4) = difference in minutes from UTC
+C   array(5) = hour of the day     (1...23)
+C   array(6) = minute of the hour  (1...59)
+C   array(7) = seconds of the minute (1...59)
+C   array(8) = miliseconds of the second (1...999)
+C
+C Note: this implementation ignores the time difference from UTC field
+C
+C*****************************************************************************
+      real function egs_time_diff(vstart,vend)
+      integer    vstart(8),vend(8)
+      real       egs_time_diff_o
+      if( vend(1).lt.vstart(1).or.
+     &  (vend(1).eq.vstart(1).and.vend(2).lt.vstart(2)) ) then
+        egs_time_diff = -egs_time_diff_o(vend,vstart)
+      else
+        egs_time_diff = egs_time_diff_o(vstart,vend)
+      end if
+      return
+      end
+
+C******************************************************************************
+C
+C day difference between the dates specified by the integer arrays vstart and
+C vend. The arrays are v(1)=year, v(2)=month, v(3)=day
+C
+C******************************************************************************
+      integer function egs_day_diff(vstart,vend)
+      integer vstart(3),vend(3),egs_day_diff_o
+      if( vend(1).lt.vstart(1).or.
+     &  (vend(1).eq.vstart(1).and.vend(2).lt.vstart(2)) ) then
+        egs_day_diff = -egs_day_diff_o(vend,vstart)
+      else
+        egs_day_diff = egs_day_diff_o(vstart,vend)
+      end if
+      return
+      end
+
+C******************************************************************************
+C
+C Returns a 3-letter abreviation of the day of the week in the string day,
+C given a day specified by the integer array values
+C   values(1)=year, values(2)=month, values(3)=day
+C
+C******************************************************************************
+      subroutine egs_weekday(values,day)
+      character*(*) day
+      integer       values(3)
+      integer       days,vtmp(3),egs_day_diff,aux
+      character*3   wdays(7)
+      data wdays/'Mon','Tue','Wed','Thu','Fri','Sat','Sun'/
+      vtmp(1) = 1970
+      vtmp(2) = 1
+      vtmp(3) = 1
+      days = egs_day_diff(vtmp,values)
+      aux = mod(days,7)
+      days = 4 + aux
+      if( days.gt.7 ) days = days - 7
+      day(:len(day)) = ' '
+      aux = min(len(day),3)
+      day(:aux) = wdays(days)(:aux)
+      return
+      end
+
+C*****************************************************************************
+C
+C Same as egs_day_diff above, but assumes that vend specifies a later date
+C than vstart.
+C
+C*****************************************************************************
+      integer function egs_day_diff_o(vstart,vend)
+      integer vstart(3),vend(3)
+      integer    days
+      logical    next_month
+      integer    tm,m,ty,y
+      integer    mdays(12)
+      data       mdays/31,28,31,30,31,30,31,31,30,31,30,31/
+      days = 0
+      ty = vstart(1)
+      y  = vend(1)
+      tm = vstart(2)
+      m  = vend(2)
+      next_month = .true.
+      do while(next_month)
+        if( tm.eq.m.and.ty.eq.y ) then
+          next_month = .false.
+        else
+          days = days + mdays(tm)
+          if( tm.eq.2.and.mod(ty,4).eq.0 ) days = days + 1
+          tm = tm + 1
+          if( tm.gt.12 ) then
+            ty = ty + 1
+            tm = 1
+          end if
+        end if
+      end do
+      days = days + vend(3) - vstart(3)
+      egs_day_diff_o = days
+      return
+      end
+
+C******************************************************************************
+C
+C Same as egs_time_diff above, but assumes that vend specifies a later date
+C than vstart.
+C
+C******************************************************************************
+      real function egs_time_diff_o(vstart,vend)
+      integer    vstart(8),vend(8)
+      integer    days,hours,minutes,secs,msecs
+      integer    egs_day_diff_o
+      days = egs_day_diff_o(vstart,vend)
+      hours = vend(5) - vstart(5)
+      minutes = vend(6) - vstart(6)
+      secs = vend(7) - vstart(7)
+      msecs = vend(8) - vstart(8)
+      egs_time_diff_o = 3600.*(24.*days+hours)+60.*minutes+secs+
+     &                  0.001*msecs
+      return
+      end
+
+C******************************************************************************
+C
+C Returns in month a 3-letter abreviation of the month specified by mo, if
+C mo is between 1 and 12, or an empty string otherwise.
+C
+C******************************************************************************
+      subroutine egs_month(mo,month)
+      integer mo
+      character*(*) month
+      integer iaux
+      character*3   months(12)
+      data months/'Jan','Feb','Mar','Apr','May','Jun', 'Jul','Aug','Sep'
+     *,'Oct','Nov','Dec'/
+      iaux = min(len(month),3)
+      month(:len(month)) = ' '
+      if( mo.ge.1.and.mo.le.12 ) month(:iaux) = months(mo)(:iaux)
+      return
+      end
+
+C******************************************************************************
+C
+C Converts a 3-letter abreviation of a month to its corresponding integer
+C value, if the string month is a valid month, or -1 otherwise.
+C
+C******************************************************************************
+      integer function egs_conver_month(month)
+      character*3 month
+      character*3 months(12)
+      integer i
+      data months/'Jan','Feb','Mar','Apr','May','Jun', 'Jul','Aug','Sep'
+     *,'Oct','Nov','Dec'/
+      do i=1,12
+        if( month.eq.months(i) ) then
+          egs_conver_month = i
+          return
+        end if
+      end do
+      egs_conver_month = -1
+      return
+      end
+
+
+C##############################################################################
+C
+C  EGSnrc egs_etime subroutine
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*****************************************************************************
+C
+C real function egs_etime(): returns CPU time consumed since the start of
+C                            the program
+C
+C*****************************************************************************
+
+      real function egs_etime()
+      real tarray(2),etime
+      egs_etime = etime(tarray)
+      return
+      end
+
+C##############################################################################
+C
+C  EGSnrc canonical system name subroutines
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C******************************************************************************
+C
+C Print the canonical system name as determined by the config.guess script
+C or the Windows installation program to the unit specified by ounit.
+C
+C*****************************************************************************
+
+      subroutine egs_print_canonical_system(ounit)
+      integer ounit
+      write(6,'(a,$)') 'win3264'
+      return
+      end
+
+C******************************************************************************
+C
+C Assign the canonical system name as determined by the config.guess script
+C or the Windows installation program to the string pointed to by res
+C
+C******************************************************************************
+
+      subroutine egs_get_canonical_system(res)
+      character*(*) res
+      integer l1,l2
+      l1 = lnblnk1('win3264')
+      l2 = len(res)
+      res(:l2) = ' '
+      if( l2.ge.l1 ) then
+        res(:l1) = 'win3264'
+      else
+        res(:l2) = 'win3264'
+      end if
+      return
+      end
+
+
+C##############################################################################
+C
+C  EGSnrc configuration name subroutines
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C******************************************************************************
+C
+C Print the configuration name as specified suring the configuration
+C process to the unit specified by ounit.
+C
+C*****************************************************************************
+
+      subroutine egs_print_configuration_name(ounit)
+      integer ounit
+      write(6,'(a,$)') 'win6432'
+      return
+      end
+
+C******************************************************************************
+C
+C Assign the configuration name as specified suring the configuration
+C process to the string pointed to by res
+C
+C******************************************************************************
+
+      subroutine egs_get_configuration_name(res)
+      character*(*) res
+      integer l1,l2
+      l1 = lnblnk1('win6432')
+      l2 = len(res)
+      res(:l2) = ' '
+      if( l2.ge.l1 ) then
+        res(:l1) = 'win6432'
+      else
+        res(:l2) = 'win6432'
+      end if
+      return
+      end
+
+
+C##############################################################################
+C
+C  EGSnrc hostname subroutines v1
+C  Copyright (C) 2015 National Research Council Canada
+C
+C  This file is part of EGSnrc.
+C
+C  EGSnrc is free software: you can redistribute it and/or modify it under
+C  the terms of the GNU Affero General Public License as published by the
+C  Free Software Foundation, either version 3 of the License, or (at your
+C  option) any later version.
+C
+C  EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY
+C  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+C  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+C  more details.
+C
+C  You should have received a copy of the GNU Affero General Public License
+C  along with EGSnrc. If not, see <http://www.gnu.org/licenses/>.
+C
+C##############################################################################
+C
+C  Author:          Iwan Kawrakow, 2003
+C
+C  Contributors:
+C
+C##############################################################################
+
+
+C*****************************************************************************
+C
+C Print the host name to the unit specified by ounit without inserting
+C a new line character.
+C
+C*****************************************************************************
+
+      subroutine egs_print_hostnm(ounit)
+      integer ounit
+      character*256 string
+      integer res,hostnm,lnblnk1
+      res = hostnm(string)
+      if( res.ne.0 ) then
+        write(6,'(a,a)') 'hostnm returned with a non-zero status '
+        stop
+      end if
+      write(ounit,'(a,$)') string(:lnblnk1(string))
+      return
+      end
+
+C*****************************************************************************
+C
+C Assign the host name to the string pointed to be hname.
+C
+C*****************************************************************************
+
+      subroutine egs_get_hostnm(hname)
+      character*(*) hname
+      character*256 string
+      integer res,hostnm,lnblnk1,l1,l2,l
+      res = hostnm(string)
+      if( res.ne.0 ) then
+        write(6,'(a,a)') 'hostnm returned with a non-zero status '
+        stop
+      end if
+      l1 = lnblnk1(string)
+      l2 = len(hname)
+      hname(:l2) = ' '
+      l = min(l1,l2)
+      hname(:l) = string(:l)
+      return
+      end
+

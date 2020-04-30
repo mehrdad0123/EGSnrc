@@ -1,26 +1,28 @@
 ### ignore EGSnrc configuration generated files
-egs_home/
-egsnrc_mp/
+# egs_home/
+# egsnrc_mp/
 mortjob.mortran
 *.mortlst
 *.lst
 *.log
 HEN_HOUSE/bin/
-HEN_HOUSE/lib/
+# HEN_HOUSE/lib/
+HEN_HOUSE/lib/win6432/*.o
+HEN_HOUSE/lib/win6432/*.obj
 HEN_HOUSE/log/
-HEN_HOUSE/distribution/
+# HEN_HOUSE/distribution/
 HEN_HOUSE/egs++/dso/
-HEN_HOUSE/mortran3/mortran3_*.f
-HEN_HOUSE/omega/beamnrc/tools/beam_build_*.f
-HEN_HOUSE/omega/progs/addphsp/addphsp_*.f
-HEN_HOUSE/omega/progs/beamdp/beamdp_*.f
-HEN_HOUSE/omega/progs/ctcreate/ctcreate_*.F
-HEN_HOUSE/omega/progs/readphsp/readphsp_*.f
-HEN_HOUSE/omega/progs/statdose/statdose_*.f
-HEN_HOUSE/pegs4/pegs4_*.f
-HEN_HOUSE/pieces/linux/egs_gui_*
-HEN_HOUSE/pieces/linux/egs_inprz_*
-HEN_HOUSE/pieces/linux/egs_view_*
+# HEN_HOUSE/mortran3/mortran3_*.f
+# HEN_HOUSE/omega/beamnrc/tools/beam_build_*.f
+# HEN_HOUSE/omega/progs/addphsp/addphsp_*.f
+# HEN_HOUSE/omega/progs/beamdp/beamdp_*.f
+# HEN_HOUSE/omega/progs/ctcreate/ctcreate_*.F
+# HEN_HOUSE/omega/progs/readphsp/readphsp_*.f
+# HEN_HOUSE/omega/progs/statdose/statdose_*.f
+# HEN_HOUSE/pegs4/pegs4_*.f
+# HEN_HOUSE/pieces/linux/egs_gui_*
+# HEN_HOUSE/pieces/linux/egs_inprz_*
+# HEN_HOUSE/pieces/linux/egs_view_*
 
 
 ### ignore generated documentation
@@ -46,7 +48,7 @@ html
 .ui/
 
 ### ignore OS generated files
-*~
+# *~
 ._*
 .vscode
 .DS_Store
@@ -56,3 +58,5 @@ html
 ehthumbs.db
 Thumbs.db
 /.vs/EGSnrc-master/v14
+
+EGSnrc-master.VC.db
