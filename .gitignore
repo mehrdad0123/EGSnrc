@@ -65,3 +65,4 @@ view_debug
 *.opendb
 /egsnrc_mp/bin/win6432
 /Projects/Build/
+/Projects/lib
