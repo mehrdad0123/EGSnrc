@@ -3588,7 +3588,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "figures", "figures", "{2BF4
 		HEN_HOUSE\doc\src\pirs898-egs++\figures\xyz_b.png = HEN_HOUSE\doc\src\pirs898-egs++\figures\xyz_b.png
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{82D46381-2A56-462B-AE31-9D1675632BEC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "egspp", "Projects\egspp\egspp.vcxproj", "{0D087372-A668-40DE-80CB-F15C608BE650}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Debug|x64.ActiveCfg = Debug|x64
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Debug|x64.Build.0 = Debug|x64
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Debug|x86.ActiveCfg = Debug|Win32
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Debug|x86.Build.0 = Debug|Win32
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Release|x64.ActiveCfg = Release|x64
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Release|x64.Build.0 = Release|x64
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Release|x86.ActiveCfg = Release|Win32
+		{0D087372-A668-40DE-80CB-F15C608BE650}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
@@ -3827,5 +3847,6 @@ Global
 		{D64E5464-275B-40D9-A3A1-CCC8931DDC7A} = {FE115C11-6A51-4FE8-B9B0-3A65482CC317}
 		{743CFE4B-3161-4A7B-AAC3-AEE95E3E8388} = {EB759F29-0B6F-4419-9CEC-A5128E0A7E89}
 		{2BF4C3BE-9287-4F39-9753-61B28047695B} = {743CFE4B-3161-4A7B-AAC3-AEE95E3E8388}
+		{0D087372-A668-40DE-80CB-F15C608BE650} = {82D46381-2A56-462B-AE31-9D1675632BEC}
 	EndGlobalSection
 EndGlobal
