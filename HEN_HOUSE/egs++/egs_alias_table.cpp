@@ -349,14 +349,14 @@ EGS_SimpleAliasTable::EGS_SimpleAliasTable(int N, const EGS_Float *f) : n(0) {
     int loopCount=0;
     while (big_list.size() > 0 && small_list.size() > 0 && loopCount++ <= loopMax) {
 
-        // get a pair of big and small bins
-        int big = big_list.back();
-        int small = small_list.back();
+		// get a pair of big and small bins
+		int big = big_list.back();
+		int Small = small_list.back();
 
-        // alias: fill small bin
-        bins[small] = big;              // alias small to big
-        wi[big] -= (1.0 - wi[small]);   // remove aliased portion from big bin
-        small_list.pop_back();          // small bin is now filled
+		// alias: fill small bin
+		bins[Small] = big;              // alias small to big
+		wi[big] -= (1.0 - wi[Small]);   // remove aliased portion from big bin
+		small_list.pop_back();          // small bin is now filled
 
         // check if big bin is now small
         if (wi[big] < 1.0 + epsilon) {

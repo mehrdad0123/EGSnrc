@@ -29,27 +29,27 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -71,15 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)egsnrc_mp\bin\win6432\</OutDir>
+    <IntDir>$(SolutionDir)Projects\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)egsnrc_mp\bin\win6432\</OutDir>
+    <IntDir>$(SolutionDir)Projects\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)egsnrc_mp\bin\win6432\</OutDir>
+    <IntDir>$(SolutionDir)Projects\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)egsnrc_mp\bin\win6432\</OutDir>
+    <IntDir>$(SolutionDir)Projects\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -87,13 +95,17 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>VISUAL_STUDIO;WIN32;BUILD_DLL;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)HEN_HOUSE\egs++;$(SolutionDir)HEN_HOUSE\interface;$(SolutionDir)HEN_HOUSE\lib\win6432;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -101,13 +113,17 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>VISUAL_STUDIO;WIN32;BUILD_DLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)HEN_HOUSE\egs++;$(SolutionDir)HEN_HOUSE\interface;$(SolutionDir)HEN_HOUSE\lib\win6432;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -117,8 +133,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>VISUAL_STUDIO;WIN32;BUILD_DLL;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)HEN_HOUSE\egs++;$(SolutionDir)HEN_HOUSE\interface;$(SolutionDir)HEN_HOUSE\lib\win6432;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,6 +143,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,8 +155,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>VISUAL_STUDIO;WIN32;BUILD_DLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;EGSPP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)HEN_HOUSE\egs++;$(SolutionDir)HEN_HOUSE\interface;$(SolutionDir)HEN_HOUSE\lib\win6432;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,8 +165,65 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_alias_table.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_application.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_atomic_relaxations.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_ausgab_object.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_base_geometry.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_base_source.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_ensdf.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_fortran_geometry.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_functions.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_geometry_tester.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_input.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_interpolator.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_library.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_object_factory.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_particle_track.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_polygon.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_projectors.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_rndm.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_run_control.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_scoring.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_shapes.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_spectra.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_timer.cpp" />
+    <ClCompile Include="..\..\HEN_HOUSE\egs++\egs_transformations.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_alias_table.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_application.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_atomic_relaxations.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_ausgab_object.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_base_geometry.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_base_source.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_ensdf.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_fortran_geometry.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_functions.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_geometry_tester.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_input.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_interpolator.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_libconfig.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_library.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_math.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_object_factory.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_particle_track.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_polygon.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_projectors.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_rndm.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_run_control.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_scoring.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_shapes.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_simple_container.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_timer.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_transformations.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\egs_vector.h" />
+    <ClInclude Include="..\..\HEN_HOUSE\egs++\missing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -60,5 +60,8 @@ Thumbs.db
 /.vs/
 
 EGSnrc-master.VC.db
-/HEN_HOUSE/egs++/geometry/examples/view_debug
+view_debug
 *.aps
+*.opendb
+/egsnrc_mp/bin/win6432
+/Projects/Build/
