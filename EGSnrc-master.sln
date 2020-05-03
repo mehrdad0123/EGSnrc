@@ -3595,6 +3595,10 @@ EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "tutor2core", "Projects\tutor2core\tutor2core.vfproj", "{049B0F80-B9AC-4A0A-96DD-EF161FB7066A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutor2pp", "Projects\tutor2pp\tutor2pp.vcxproj", "{DD71035B-194F-42ED-A7E2-3C172DEE9983}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0D087372-A668-40DE-80CB-F15C608BE650} = {0D087372-A668-40DE-80CB-F15C608BE650}
+		{049B0F80-B9AC-4A0A-96DD-EF161FB7066A} = {049B0F80-B9AC-4A0A-96DD-EF161FB7066A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

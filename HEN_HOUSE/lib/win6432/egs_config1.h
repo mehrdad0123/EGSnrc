@@ -42,11 +42,19 @@
 /*! Use the following macro for functions that don't have an underscore in
     in their name.
  */
+#ifdef INTEL_FORTRAN
+#define F77_OBJ(fname,FNAME) FNAME
+#else
 #define F77_OBJ(fname,FNAME) fname##_
+#endif
 
 /*! Use the following macro for functions with underscore(s) in their name
  */
+#ifdef INTEL_FORTRAN
+#define F77_OBJ_(fname,FNAME) FNAME
+#else
 #define F77_OBJ_(fname,FNAME) fname##_
+#endif
 
 /*! The name of the configuration
  */
