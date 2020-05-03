@@ -3596,6 +3596,7 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "tutor2core", "Projects\tuto
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutor2pp", "Projects\tutor2pp\tutor2pp.vcxproj", "{DD71035B-194F-42ED-A7E2-3C172DEE9983}"
 	ProjectSection(ProjectDependencies) = postProject
+		{C44EC320-5F69-4C93-B2D6-5019363D58B4} = {C44EC320-5F69-4C93-B2D6-5019363D58B4}
 		{0D087372-A668-40DE-80CB-F15C608BE650} = {0D087372-A668-40DE-80CB-F15C608BE650}
 		{049B0F80-B9AC-4A0A-96DD-EF161FB7066A} = {049B0F80-B9AC-4A0A-96DD-EF161FB7066A}
 	EndProjectSection
@@ -3605,6 +3606,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "geometry", "geometry", "{1EEB904B-2E2B-4CE2-BE7C-7B0D50E012FC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "egs_planes", "Projects\egs++\geometry\egs_planes\egs_planes.vcxproj", "{C44EC320-5F69-4C93-B2D6-5019363D58B4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0D087372-A668-40DE-80CB-F15C608BE650} = {0D087372-A668-40DE-80CB-F15C608BE650}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
