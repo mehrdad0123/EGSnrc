@@ -62,6 +62,7 @@ REPLACE {$FLUSH_UNIT(#);} WITH {call flush({P1});}
 " If you want your user code to return an exit status, use the 
 " following macro to terminate execution
 REPLACE {$CALL_EXIT(#);} WITH {call exit({P1});}
+REPLACE {$CALL_EXIT(#);} WITH {call exit_with_error({P1});}
 ;
 " mortran3 gets confused by the # char => we need to pass it as an "
 " argument to the macro. "
