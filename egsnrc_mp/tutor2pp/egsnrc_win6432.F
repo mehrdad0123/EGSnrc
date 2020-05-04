@@ -106,7 +106,11 @@ C*****************************************************************************
       implicit none
       character*(*) file_name
       logical ex
+#ifdef __INTEL_COMPILER
+      inquire(DIRECTORY=file_name,exist=ex)
+#else
       inquire(file=file_name,exist=ex)
+#endif
       egs_isdir = ex
       return
       end
