@@ -1,7 +1,13 @@
+@echo off
 
-:: Get tutor directory from argument
-cd %*
-echo Current Directory: %CD%
+FOR %%x IN (%*) DO CALL :myfunct3 %%x
+echo .
+GOTO :eof
 
-:: make fortran file
-make egsnrc_win6432.F
+:myfunct3
+	echo .
+	echo  Current directory is %1
+	PUSHD %1
+	call make egsnrc_win6432.F
+	POPD
+	GOTO :eof

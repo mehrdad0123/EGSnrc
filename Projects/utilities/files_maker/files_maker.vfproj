@@ -10,7 +10,7 @@
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool" CommandLine="$(SolutionDir)Utilities\make_tutors_core $(SolutionDir)egsnrc_mp\tutor2pp"/>
+				<Tool Name="VFPreBuildEventTool" CommandLine="$(SolutionDir)Utilities\make_tutors_core $(SolutionDir)egsnrc_mp\tutor2pp $(SolutionDir)egsnrc_mp\tutor7pp"/>
 				<Tool Name="VFPostBuildEventTool" CommandLine="del $(TargetPath)&#xA;echo $(TargetPath) was deleted."/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" OutputDirectory="$(ProjectDir)\bin" IntermediateDirectory="$(SolutionDir)Projects\Build\$(ProjectName)\">
@@ -20,7 +20,7 @@
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
-				<Tool Name="VFPreBuildEventTool" CommandLine="$(SolutionDir)Utilities\make_tutors_core $(SolutionDir)egsnrc_mp\tutor2pp"/>
+				<Tool Name="VFPreBuildEventTool" CommandLine="$(SolutionDir)Utilities\make_tutors_core $(SolutionDir)egsnrc_mp\tutor2pp $(SolutionDir)egsnrc_mp\tutor7pp"/>
 				<Tool Name="VFPostBuildEventTool" CommandLine="del $(TargetPath)&#xA;echo $(TargetPath) was deleted."/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
