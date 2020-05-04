@@ -922,12 +922,12 @@ int EGS_InputPrivate::addContent(istream &in) {
         the_start += start_key_end;
         the_end += stop_key_end;
         int p1;
-        int ep = findStop(ie+1,the_start,the_end,input,p1);
-        if (ep > ie+1) {
+        int ep2 = findStop(ie+1,the_start,the_end,input,p1);
+        if (ep2 > ie+1) {
             EGS_InputPrivate *ip = new EGS_InputPrivate(what);
             string content;
             content.assign(input,ie+1,p1-ie-1);
-            input.erase(p,ep-p);
+            input.erase(p,ep2-p);
             ip->setContentFromString(content);
             if (ip->isA("input loop")) {
                 processInputLoop(ip);
@@ -941,6 +941,7 @@ int EGS_InputPrivate::addContent(istream &in) {
             egsWarning("No matching stop delimiter for %s\n",what.c_str());
             return -1;
         }
+		ep = input.size();
     }
     p = 0;
     string::size_type p1;
