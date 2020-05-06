@@ -3647,6 +3647,25 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "egs_track_scoring", "Projec
 		{0D087372-A668-40DE-80CB-F15C608BE650} = {0D087372-A668-40DE-80CB-F15C608BE650}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "epp", "epp", "{8EFDAE3B-5D15-4D77-A6CC-4285BAAA240F}"
+	ProjectSection(SolutionItems) = preProject
+		egsnrc_mp\epp\array_sizes.h = egsnrc_mp\epp\array_sizes.h
+		egsnrc_mp\epp\bmp.c = egsnrc_mp\epp\bmp.c
+		egsnrc_mp\epp\Changes = egsnrc_mp\epp\Changes
+		egsnrc_mp\epp\egs_application_for_Epp.cpp = egsnrc_mp\epp\egs_application_for_Epp.cpp
+		egsnrc_mp\epp\egs_application_for_Epp.h = egsnrc_mp\epp\egs_application_for_Epp.h
+		egsnrc_mp\epp\Epp.cpp = egsnrc_mp\epp\Epp.cpp
+		egsnrc_mp\epp\Epp.h = egsnrc_mp\epp\Epp.h
+		egsnrc_mp\epp\Epp_User_Manual_1.4.3.pdf = egsnrc_mp\epp\Epp_User_Manual_1.4.3.pdf
+		egsnrc_mp\epp\Example_1.egsinp = egsnrc_mp\epp\Example_1.egsinp
+		egsnrc_mp\epp\Example_2.egsinp = egsnrc_mp\epp\Example_2.egsinp
+		egsnrc_mp\epp\INSTALL = egsnrc_mp\epp\INSTALL
+		egsnrc_mp\epp\LICENSE = egsnrc_mp\epp\LICENSE
+		egsnrc_mp\epp\Makefile = egsnrc_mp\epp\Makefile
+		egsnrc_mp\epp\phantom_10cm.egsphant = egsnrc_mp\epp\phantom_10cm.egsphant
+		egsnrc_mp\epp\ReadEppOutput.m = egsnrc_mp\epp\ReadEppOutput.m
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -3980,5 +3999,6 @@ Global
 		{8FE23B20-3F84-4414-8D49-F0F0E95D608F} = {82D46381-2A56-462B-AE31-9D1675632BEC}
 		{839B16B6-0663-471C-8866-8C0BC3463069} = {70CA56CE-DC41-48A6-A627-002A235C944D}
 		{03782642-7585-439E-A656-5D320CFD61F1} = {839B16B6-0663-471C-8866-8C0BC3463069}
+		{8EFDAE3B-5D15-4D77-A6CC-4285BAAA240F} = {1054CDA6-EBD9-44DC-92EF-8CC1D207584D}
 	EndGlobalSection
 EndGlobal
